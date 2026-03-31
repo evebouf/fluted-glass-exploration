@@ -1,0 +1,636 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Fullscreen Glass ─────────────────────────────────────────── */
+.screen {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.8s ease;
+  background: #F4F2DD;
+}
+
+.screen.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.screen.inactive {
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── Second Glass Layer (moiré interference) ──────────────────── */
+.glass-layer-2 {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  transition: opacity 0.5s ease;
+}
+
+/* ─── Panel Toggle ─────────────────────────────────────────────── */
+.panel-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 30;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(61, 40, 0, 0.15);
+  background: rgba(244, 242, 221, 0.6);
+  backdrop-filter: blur(12px);
+  color: rgba(61, 40, 0, 0.6);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.panel-toggle:hover {
+  border-color: rgba(251, 79, 18, 0.4);
+  color: #FB4F12;
+}
+
+/* ─── Control Panel ────────────────────────────────────────────── */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100vh;
+  z-index: 20;
+  background: rgba(14, 13, 11, 0.88);
+  backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(251, 79, 18, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+}
+
+.panel.open {
+  transform: translateX(0);
+}
+
+.panel-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 64px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(251, 79, 18, 0.2);
+  border-radius: 2px;
+}
+
+/* ─── Copy Button ──────────────────────────────────────────────── */
+.copy-btn {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(251, 79, 18, 0.2);
+  border-radius: 6px;
+  background: rgba(251, 79, 18, 0.06);
+  color: rgba(251, 79, 18, 0.7);
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 8px;
+}
+
+.copy-btn:hover {
+  background: rgba(251, 79, 18, 0.12);
+  border-color: rgba(251, 79, 18, 0.4);
+  color: #FB4F12;
+}
+
+/* ─── Panel Sections ───────────────────────────────────────────── */
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(61, 40, 0, 0.06);
+}
+
+.panel-section:last-child {
+  border-bottom: none;
+}
+
+.panel-section-title {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(251, 79, 18, 0.6);
+  margin-bottom: 2px;
+}
+
+/* ─── Preset Buttons ───────────────────────────────────────────── */
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.preset-btn {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(61, 40, 0, 0.08);
+  background: rgba(61, 40, 0, 0.04);
+  color: rgba(61, 40, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-btn:hover {
+  border-color: rgba(251, 79, 18, 0.3);
+  color: rgba(251, 79, 18, 0.8);
+  background: rgba(251, 79, 18, 0.06);
+}
+
+.preset-btn.active {
+  border-color: rgba(251, 79, 18, 0.5);
+  color: #FB4F12;
+  background: rgba(251, 79, 18, 0.12);
+}
+
+/* ─── Slider Control ───────────────────────────────────────────── */
+.ctrl-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ctrl-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.ctrl-slider-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(232, 228, 220, 0.35);
+}
+
+.ctrl-slider-value {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  color: rgba(251, 79, 18, 0.7);
+  font-weight: 700;
+}
+
+.ctrl-slider input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: rgba(61, 40, 0, 0.08);
+  border-radius: 1px;
+  outline: none;
+  cursor: pointer;
+}
+
+.ctrl-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #FB4F12;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.ctrl-slider input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+/* ─── Select Control ───────────────────────────────────────────── */
+.ctrl-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ctrl-select-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(232, 228, 220, 0.35);
+}
+
+.ctrl-select select {
+  background: rgba(61, 40, 0, 0.04);
+  border: 1px solid rgba(232, 228, 220, 0.1);
+  color: rgba(232, 228, 220, 0.7);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-family: 'Martian Mono', monospace;
+  font-size: 11px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.ctrl-select select:focus {
+  border-color: rgba(251, 79, 18, 0.4);
+}
+
+.ctrl-select select option {
+  background: #1a1918;
+  color: #e0dcc8;
+}
+
+/* ─── Color Control ────────────────────────────────────────────── */
+.ctrl-color {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ctrl-color-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(232, 228, 220, 0.35);
+}
+
+.ctrl-color-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctrl-color-input input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(232, 228, 220, 0.1);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ctrl-color-input input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.ctrl-color-input input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.ctrl-color-hex {
+  font-family: 'Martian Mono', monospace;
+  font-size: 11px;
+  color: rgba(232, 228, 220, 0.5);
+  text-transform: uppercase;
+}
+
+/* ─── Layout helpers ───────────────────────────────────────────── */
+.ctrl-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ctrl-row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── Bottom HUD ───────────────────────────────────────────────── */
+.hud-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 32px 40px;
+  pointer-events: none;
+}
+
+.hud-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hud-label h2 {
+  font-family: 'Martian Mono', monospace;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: rgba(61, 40, 0, 0.6);
+}
+
+.hud-label span {
+  font-family: 'Martian Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(61, 40, 0, 0.25);
+}
+
+.hud-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+}
+
+.hud-counter {
+  font-family: 'Martian Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: rgba(61, 40, 0, 0.4);
+  min-width: 60px;
+  text-align: center;
+}
+
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(61, 40, 0, 0.15);
+  background: rgba(244, 242, 221, 0.5);
+  backdrop-filter: blur(8px);
+  color: rgba(61, 40, 0, 0.6);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.nav-btn:hover {
+  border-color: rgba(251, 79, 18, 0.4);
+  color: #FB4F12;
+  background: rgba(251, 79, 18, 0.08);
+}
+
+/* ─── Hint ─────────────────────────────────────────────────────── */
+.hud-hint {
+  position: fixed;
+  bottom: 12px;
+  right: 16px;
+  z-index: 5;
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  color: rgba(61, 40, 0, 0.15);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+/* ─── Top Menu Bar ─────────────────────────────────────────────── */
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: none;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.menu-bar.hidden {
+  opacity: 0;
+}
+
+/* Mode tabs */
+.menu-modes {
+  display: flex;
+  gap: 2px;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.menu-mode-btn {
+  font-family: 'Martian Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid rgba(61, 40, 0, 0.08);
+  background: rgba(61, 40, 0, 0.03);
+  color: rgba(61, 40, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.menu-mode-btn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.menu-mode-btn:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.menu-mode-btn.active {
+  background: rgba(251, 79, 18, 0.1);
+  border-color: rgba(251, 79, 18, 0.3);
+  color: #FB4F12;
+}
+
+.menu-mode-btn:hover:not(.active) {
+  border-color: rgba(61, 40, 0, 0.15);
+  color: rgba(232, 228, 220, 0.5);
+}
+
+/* Divider */
+.menu-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(61, 40, 0, 0.08);
+  flex-shrink: 0;
+}
+
+/* Glass tabs */
+.menu-glass {
+  display: flex;
+  gap: 3px;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.menu-glass-btn {
+  font-family: 'Martian Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(61, 40, 0, 0.06);
+  background: rgba(61, 40, 0, 0.02);
+  color: rgba(61, 40, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.menu-glass-btn.active {
+  border-color: rgba(251, 79, 18, 0.25);
+  color: rgba(251, 79, 18, 0.7);
+  background: rgba(251, 79, 18, 0.06);
+}
+
+.menu-glass-btn:hover:not(.active) {
+  color: rgba(61, 40, 0, 0.4);
+  border-color: rgba(61, 40, 0, 0.12);
+}
+
+/* Exploration thumbnails */
+.menu-explorations {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+  padding: 2px 0;
+  scrollbar-width: none;
+}
+
+.menu-explorations::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-thumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid rgba(61, 40, 0, 0.06);
+  background: rgba(61, 40, 0, 0.03);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-thumb.active {
+  border-color: rgba(251, 79, 18, 0.5);
+  box-shadow: 0 0 8px rgba(251, 79, 18, 0.15);
+}
+
+.menu-thumb:hover:not(.active) {
+  border-color: rgba(61, 40, 0, 0.15);
+}
+
+.menu-thumb-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.03em;
+  color: rgba(61, 40, 0, 0.4);
+  text-align: center;
+  line-height: 1.1;
+  padding: 0 2px;
+}
+
+.menu-thumb.active .menu-thumb-label {
+  color: rgba(251, 79, 18, 0.8);
+}
+
+/* ─── Ambient Mode ────────────────────────────────────────────── */
+.ambient-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* Drift animations — large travel distances, slow scale breathing */
+@keyframes ambient-drift-1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(15vw, 10vh) scale(1.15); }
+  50%  { transform: translate(25vw, 20vh) scale(1.05); }
+  75%  { transform: translate(10vw, 25vh) scale(1.2); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes ambient-drift-2 {
+  0%   { transform: translate(0, 0) scale(1.1); }
+  30%  { transform: translate(-18vw, 12vh) scale(1); }
+  60%  { transform: translate(-8vw, 28vh) scale(1.2); }
+  100% { transform: translate(0, 0) scale(1.1); }
+}
+
+@keyframes ambient-drift-3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  35%  { transform: translate(20vw, -10vh) scale(1.1); }
+  65%  { transform: translate(10vw, 18vh) scale(1.25); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes ambient-drift-4 {
+  0%   { transform: translate(0, 0) scale(1.05); }
+  40%  { transform: translate(-12vw, -15vh) scale(1.2); }
+  70%  { transform: translate(15vw, 8vh) scale(1); }
+  100% { transform: translate(0, 0) scale(1.05); }
+}
+
+@keyframes ambient-drift-5 {
+  0%   { transform: translate(0, 0) scale(1); }
+  20%  { transform: translate(10vw, 20vh) scale(1.15); }
+  50%  { transform: translate(-8vw, 15vh) scale(1.25); }
+  80%  { transform: translate(18vw, -8vh) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes ambient-drift-6 {
+  0%   { transform: translate(0, 0) scale(1.1); }
+  33%  { transform: translate(-15vw, 18vh) scale(1); }
+  66%  { transform: translate(12vw, 10vh) scale(1.2); }
+  100% { transform: translate(0, 0) scale(1.1); }
+}
