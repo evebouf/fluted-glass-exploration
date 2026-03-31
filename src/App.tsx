@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { FlutedGlass, GrainGradient } from "@paper-design/shaders-react";
-import { useAnimatedOrbImage, landscapeOrbs, shiftHue, hexToRgba, type OrbConfig } from "./useOrbImage";
+import { useAnimatedOrbImage, landscapeOrbs, type OrbConfig } from "./useOrbImage";
 import { useStaticCircleImage } from "./useStaticCircle";
 import { useMovingShapesImage, shapesPresets, type ShapesConfig } from "./useMovingShapes";
 import "./App.css";
@@ -22,12 +22,14 @@ interface GlassConfig {
 }
 
 const glassPresets: GlassConfig[] = [
+  { label: "None", shape: "lines", distortionShape: "prism", size: 0.95, distortion: 0, edges: 0, blur: 0, shadows: 0, highlights: 0, stretch: 0, angle: 0, grainOverlay: 0 },
+  { label: "Whisper", shape: "lines", distortionShape: "prism", size: 0.95, distortion: 0.1, edges: 0.08, blur: 0, shadows: 0.05, highlights: 0.03, stretch: 0, angle: 0, grainOverlay: 0.02 },
+  { label: "Fine", shape: "lines", distortionShape: "prism", size: 0.92, distortion: 0.3, edges: 0.2, blur: 0, shadows: 0.15, highlights: 0.1, stretch: 0, angle: 0, grainOverlay: 0.03 },
   { label: "Sharp", shape: "lines", distortionShape: "prism", size: 0.67, distortion: 0.55, edges: 0.4, blur: 0, shadows: 0.3, highlights: 0.35, stretch: 0, angle: 0, grainOverlay: 0.04 },
-  { label: "Zigzag", shape: "linesIrregular", distortionShape: "prism", size: 0.75, distortion: 0.7, edges: 0.5, blur: 0, shadows: 0.25, highlights: 0.12, stretch: 0.3, angle: 0, grainOverlay: 0.05 },
+  { label: "Dense", shape: "lines", distortionShape: "prism", size: 0.45, distortion: 0.4, edges: 0.3, blur: 0, shadows: 0.2, highlights: 0.15, stretch: 0, angle: 0, grainOverlay: 0.03 },
+  { label: "Soft", shape: "lines", distortionShape: "prism", size: 0.8, distortion: 0.4, edges: 0.15, blur: 0.15, shadows: 0.1, highlights: 0.08, stretch: 0, angle: 0, grainOverlay: 0.05 },
   { label: "Waves", shape: "wave", distortionShape: "contour", size: 0.85, distortion: 0.6, edges: 0.45, blur: 0.1, shadows: 0.15, highlights: 0.08, stretch: 0.8, angle: 0, grainOverlay: 0.04 },
   { label: "Cascade", shape: "lines", distortionShape: "cascade", size: 0.5, distortion: 0.8, edges: 0.55, blur: 0.15, shadows: 0.4, highlights: 0.1, stretch: 0, angle: 0, grainOverlay: 0.03 },
-  { label: "Abstract", shape: "linesIrregular", distortionShape: "flat", size: 0.65, distortion: 1, edges: 0.5, blur: 0.6, shadows: 0.1, highlights: 0.05, stretch: 1, angle: 25, grainOverlay: 0.08 },
-  { label: "Fine", shape: "lines", distortionShape: "prism", size: 0.92, distortion: 0.3, edges: 0.2, blur: 0, shadows: 0.15, highlights: 0.1, stretch: 0, angle: 0, grainOverlay: 0.03 },
 ];
 
 // ─── Static Glass (no movement) ──────────────────────────────────
@@ -49,7 +51,7 @@ function StaticGlass({
       image={image}
       colorBack="#00000000"
       colorShadow="#5C2800"
-      colorHighlight="#F0A870"
+      colorHighlight="#F0C8A0"
       shape={glassConfig.shape}
       distortionShape={glassConfig.distortionShape}
       size={glassConfig.size}
@@ -71,150 +73,9 @@ function StaticGlass({
   );
 }
 
-// ─── Cursor-reactive orb image ───────────────────────────────────
-// Same as useAnimatedOrbImage but adds a cursor-driven offset to all blob positions
-function useCursorOrbImage(config: OrbConfig, active: boolean): string {
-  const [image, setImage] = useState("");
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const mouseRef = useRef({ x: 0.5, y: 0.5 });
-  const smoothRef = useRef({ x: 0, y: 0 });
-  const configRef = useRef(config);
-  configRef.current = config;
-
-  useEffect(() => {
-    console.log("[cursor-orb] mousemove listener ATTACHED");
-    const onMove = (e: MouseEvent) => {
-      mouseRef.current.x = e.clientX / window.innerWidth;
-      mouseRef.current.y = e.clientY / window.innerHeight;
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => {
-      console.log("[cursor-orb] mousemove listener DETACHED");
-      window.removeEventListener("mousemove", onMove);
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log("[cursor-orb] draw effect running, active=", active);
-    if (!active) {
-      console.log("[cursor-orb] NOT active, skipping");
-      return;
-    }
-
-    if (!canvasRef.current) {
-      canvasRef.current = document.createElement("canvas");
-      canvasRef.current.width = 480;
-      canvasRef.current.height = 270;
-      console.log("[cursor-orb] canvas created");
-    }
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d")!;
-    const CW = 480, CH = 270;
-    const DIAG = Math.sqrt(CW * CW + CH * CH);
-
-    let frame: number;
-    const start = performance.now();
-    let lastDraw = 0;
-    let drawCount = 0;
-
-    const draw = (now: number) => {
-      if (now - lastDraw < 50) {
-        frame = requestAnimationFrame(draw);
-        return;
-      }
-      lastDraw = now;
-      drawCount++;
-      const t = (now - start) / 1000;
-      const cfg = configRef.current;
-
-      // Smooth lerp cursor offset
-      const s = smoothRef.current;
-      const m = mouseRef.current;
-      // Vertical movement is what's visible through vertical fluted glass lines.
-      // Horizontal shift gets absorbed by the fluting. So use big vertical range.
-      const targetX = (m.x - 0.5) * 0.5;
-      const targetY = (m.y - 0.5) * 2.5 + (m.x - 0.5) * 1.5;
-      s.x += (targetX - s.x) * 0.08;
-      s.y += (targetY - s.y) * 0.08;
-
-      // Debug: log every 40 frames (~2 seconds)
-      if (drawCount % 40 === 0) {
-        console.log("[cursor-orb] frame", drawCount, {
-          rawMouse: { x: m.x.toFixed(3), y: m.y.toFixed(3) },
-          smooth: { x: s.x.toFixed(4), y: s.y.toFixed(4) },
-          offsetPx: { x: (s.x * CW).toFixed(1), y: (s.y * CH).toFixed(1) },
-          blobs: cfg.blobs.length,
-          imageLen: 0, // will be set after toDataURL
-        });
-      }
-
-      ctx.fillStyle = cfg.bgColor;
-      ctx.fillRect(0, 0, CW, CH);
-
-      for (let i = 0; i < cfg.blobs.length; i++) {
-        const blob = cfg.blobs[i];
-        const p = blob.phase;
-
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = 1;
-
-        const hueShift = Math.sin(t * (0.05 + i * 0.02) + p) * 8;
-        const color = shiftHue(blob.color, hueShift);
-
-        let cx: number, cy: number;
-        if (i % 3 === 0) {
-          cx = (blob.x + Math.cos(t * blob.freqX + p) * blob.driftX) * CW;
-          cy = (blob.y + Math.sin(t * blob.freqX + p) * blob.driftY) * CH;
-        } else if (i % 3 === 1) {
-          cx = (blob.x + Math.sin(t * blob.freqX * 2 + p) * blob.driftX) * CW;
-          cy = (blob.y + Math.sin(t * blob.freqY * 3 + p) * blob.driftY) * CH;
-        } else {
-          const radialT = Math.sin(t * blob.freqX * 0.7 + p);
-          cx = (blob.x + (blob.x - 0.5) * radialT * blob.driftX * 2) * CW;
-          cy = (blob.y + (blob.y - 0.5) * radialT * blob.driftY * 2) * CH;
-        }
-
-        // Add cursor offset — shifts entire gradient behind static glass
-        cx += s.x * CW;
-        cy += s.y * CH;
-
-        const breathe = 1 + Math.sin(t * (0.15 + i * 0.04) + p * 2) * 0.2;
-        const r = blob.radius * DIAG * breathe;
-
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, color);
-        grad.addColorStop(0.45, color);
-        grad.addColorStop(0.75, hexToRgba(color, 0.35));
-        grad.addColorStop(1, "transparent");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, CW, CH);
-      }
-
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-      if (drawCount % 40 === 0) {
-        console.log("[cursor-orb] dataURL length:", dataUrl.length);
-      }
-      setImage(dataUrl);
-      frame = requestAnimationFrame(draw);
-    };
-
-    console.log("[cursor-orb] starting rAF loop");
-    frame = requestAnimationFrame(draw);
-    return () => {
-      console.log("[cursor-orb] CANCELLING rAF loop, ran", drawCount, "frames");
-      cancelAnimationFrame(frame);
-    };
-  // Only restart on active change, not config — config is read via ref
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
-
-  console.log("[cursor-orb] hook render, image length:", image.length, "active:", active);
-  return image;
-}
-
 // ─── Mode wrappers ───────────────────────────────────────────────
 function CursorScreen({ orbConfig, glassConfig, glassScale }: {
-  orbConfig: OrbConfig; glassConfig: GlassConfig; glassScale: number; active: boolean;
+  orbConfig: OrbConfig; glassConfig: GlassConfig; glassScale: number;
 }) {
   // Shift blob positions based on cursor — modify orbConfig before passing to useAnimatedOrbImage
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
@@ -312,11 +173,7 @@ function ShapesScreen({ shapesConfig, glassConfig, glassScale, active }: {
 function GrainScreen({ glassConfig, glassScale, active }: {
   glassConfig: GlassConfig; glassScale: number; active: boolean;
 }) {
-  // Render GrainGradient to a hidden canvas, capture as image for FlutedGlass
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const grainContainerRef = useRef<HTMLDivElement | null>(null);
-
-  // We can't nest two WebGL shaders, so show them layered:
+  // Two WebGL shaders layered:
   // GrainGradient behind, FlutedGlass on top with transparent colorBack
   const [renderState, setRenderState] = useState({
     stretch: glassConfig.stretch,
@@ -396,7 +253,7 @@ function GrainScreen({ glassConfig, glassScale, active }: {
           image=""
           colorBack="#00000000"
           colorShadow="#5C2800"
-          colorHighlight="#F0A870"
+          colorHighlight="#F0C8A0"
           shape={glassConfig.shape}
           distortionShape={glassConfig.distortionShape}
           size={s.size}

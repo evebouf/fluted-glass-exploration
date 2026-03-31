@@ -13,13 +13,13 @@ export const PALETTE = {
   },
   glass: {
     shadow: "#5C2800",
-    highlight: "#F0A870",
+    highlight: "#F0C8A0",
   },
   text: "#3D2800",
 } as const;
 
 export const SHARP_GLASS = {
-  label: "Sharp" as const,
+  label: "Sharp",
   shape: "lines" as const,
   distortionShape: "prism" as const,
   size: 0.67,
@@ -34,7 +34,7 @@ export const SHARP_GLASS = {
 };
 
 export const FINE_GLASS = {
-  label: "Fine" as const,
+  label: "Fine",
   shape: "lines" as const,
   distortionShape: "prism" as const,
   size: 0.92,

@@ -28,7 +28,7 @@ function LiveGlass({
   style,
 }: {
   orbIndex?: number;
-  glass?: typeof SHARP_GLASS;
+  glass?: { shape: "lines" | "wave" | "linesIrregular"; distortionShape: "prism" | "contour" | "flat" | "cascade"; size: number; distortion: number; edges: number; blur: number; shadows: number; highlights: number; stretch: number; angle: number; grainOverlay: number };
   scale?: number;
   style?: React.CSSProperties;
 }) {
@@ -165,6 +165,14 @@ export default function BrandKit() {
               Warmth pushing through order. Ambition refracted through discipline.
             </p>
             <p>
+              Fluted glass is fractal by nature. A single light source hits
+              the surface and multiplies — one beam becomes dozens of parallel
+              lines, each carrying the same signal at a slightly different angle.
+              That's the ethos of Startup School: one idea, refracted across
+              thousands of founders, each finding their own version of it. The
+              pattern repeats but the perspective is always unique.
+            </p>
+            <p>
               The material itself carries a quiet nod to mid-century architecture —
               fluted glass in office lobbies, department stores, old San Francisco
               buildings. It's familiar without being retro. The warmth of the
@@ -182,6 +190,10 @@ export default function BrandKit() {
             <div className="bk-concept-hook">
               <span className="bk-concept-hook-label">Theme</span>
               <span className="bk-concept-hook-text">Bending the future</span>
+            </div>
+            <div className="bk-concept-hook">
+              <span className="bk-concept-hook-label">Motif</span>
+              <span className="bk-concept-hook-text">Fractal light, multiplied</span>
             </div>
             <div className="bk-concept-hook">
               <span className="bk-concept-hook-label">CTA</span>
@@ -567,6 +579,7 @@ const MOODBOARD_IMAGES = [
   "/moodboard/neon-drape.png",
   "/moodboard/orange-pleats.jpg",
   "/moodboard/orange-sun-dinner.jpg",
+  "/moodboard/fluted-glass-partition.png",
 ];
 
 function Moodboard() {
