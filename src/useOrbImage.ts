@@ -26,86 +26,21 @@ const DIAG = Math.sqrt(CW * CW + CH * CH);
 // #F4F1DE (bg) → #F2E8D0 → #F0D4B0 → #EBB488 → #E89060 → #E86830 → #EB5020 → #F04A18
 
 export const landscapeOrbs: OrbConfig[] = [
-  // ─── Bottom-anchored (like the live site) ─────────────────────
+  // ─── Your 3 favorites ─────────────────────────────────────────
   {
     label: "SUS Hero",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 0.5, y: 1.05, radius: 0.4, driftX: 0.04, driftY: 0.03, freqX: 0.06, freqY: 0.05, phase: 0 },
-      { color: "#EB5020", x: 0.5, y: 0.9, radius: 0.45, driftX: 0.05, driftY: 0.04, freqX: 0.08, freqY: 0.06, phase: 1.5 },
-      { color: "#E89060", x: 0.5, y: 0.72, radius: 0.4, driftX: 0.04, driftY: 0.03, freqX: 0.06, freqY: 0.07, phase: 3.0 },
-      { color: "#EBB488", x: 0.5, y: 0.55, radius: 0.35, driftX: 0.03, driftY: 0.03, freqX: 0.05, freqY: 0.06, phase: 4.5 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
   {
-    label: "SUS Tight",
+    label: "SUS Top",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 0.5, y: 1.1, radius: 0.3, driftX: 0.03, driftY: 0.02, freqX: 0.05, freqY: 0.04, phase: 0 },
-      { color: "#E86830", x: 0.5, y: 0.95, radius: 0.35, driftX: 0.04, driftY: 0.03, freqX: 0.07, freqY: 0.06, phase: 1.8 },
-      { color: "#EBB488", x: 0.5, y: 0.8, radius: 0.3, driftX: 0.03, driftY: 0.03, freqX: 0.06, freqY: 0.05, phase: 3.5 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
-  {
-    label: "SUS Wide",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.5, y: 1.0, radius: 0.55, driftX: 0.05, driftY: 0.04, freqX: 0.07, freqY: 0.05, phase: 0 },
-      { color: "#EB5020", x: 0.5, y: 0.8, radius: 0.55, driftX: 0.06, driftY: 0.05, freqX: 0.09, freqY: 0.07, phase: 1.5 },
-      { color: "#E89060", x: 0.45, y: 0.6, radius: 0.5, driftX: 0.04, driftY: 0.04, freqX: 0.06, freqY: 0.08, phase: 3.0 },
-      { color: "#F0D4B0", x: 0.5, y: 0.4, radius: 0.45, driftX: 0.03, driftY: 0.03, freqX: 0.05, freqY: 0.06, phase: 4.5 },
-    ],
-  },
-
-  // ─── Center-focused ───────────────────────────────────────────
-  {
-    label: "Center Glow",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#EB5020", x: 0.5, y: 0.5, radius: 0.35, driftX: 0.06, driftY: 0.06, freqX: 0.1, freqY: 0.12, phase: 0 },
-      { color: "#E89060", x: 0.5, y: 0.5, radius: 0.5, driftX: 0.04, driftY: 0.04, freqX: 0.07, freqY: 0.08, phase: 2.0 },
-      { color: "#EBB488", x: 0.5, y: 0.5, radius: 0.6, driftX: 0.03, driftY: 0.03, freqX: 0.05, freqY: 0.06, phase: 4.0 },
-    ],
-  },
-  {
-    label: "Center Tight",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.5, y: 0.5, radius: 0.22, driftX: 0.05, driftY: 0.05, freqX: 0.12, freqY: 0.1, phase: 0 },
-      { color: "#E86830", x: 0.5, y: 0.5, radius: 0.35, driftX: 0.04, driftY: 0.04, freqX: 0.08, freqY: 0.09, phase: 2.0 },
-    ],
-  },
-
-  // ─── Diagonal / asymmetric ────────────────────────────────────
-  {
-    label: "Diagonal",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.2, y: 0.8, radius: 0.35, driftX: 0.08, driftY: 0.06, freqX: 0.1, freqY: 0.08, phase: 0 },
-      { color: "#E89060", x: 0.5, y: 0.5, radius: 0.35, driftX: 0.06, driftY: 0.06, freqX: 0.08, freqY: 0.1, phase: 2.0 },
-      { color: "#EBB488", x: 0.8, y: 0.2, radius: 0.3, driftX: 0.05, driftY: 0.05, freqX: 0.07, freqY: 0.09, phase: 4.0 },
-    ],
-  },
-  {
-    label: "Left Anchor",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.1, y: 0.6, radius: 0.4, driftX: 0.06, driftY: 0.08, freqX: 0.08, freqY: 0.1, phase: 0 },
-      { color: "#E86830", x: 0.25, y: 0.4, radius: 0.35, driftX: 0.05, driftY: 0.06, freqX: 0.1, freqY: 0.08, phase: 1.8 },
-      { color: "#EBB488", x: 0.4, y: 0.55, radius: 0.4, driftX: 0.04, driftY: 0.04, freqX: 0.06, freqY: 0.07, phase: 3.5 },
-    ],
-  },
-  {
-    label: "Right Anchor",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.85, y: 0.55, radius: 0.38, driftX: 0.06, driftY: 0.07, freqX: 0.08, freqY: 0.1, phase: 0 },
-      { color: "#EB5020", x: 0.7, y: 0.35, radius: 0.3, driftX: 0.05, driftY: 0.06, freqX: 0.1, freqY: 0.08, phase: 2.0 },
-      { color: "#E89060", x: 0.6, y: 0.65, radius: 0.35, driftX: 0.04, driftY: 0.04, freqX: 0.07, freqY: 0.09, phase: 3.8 },
-    ],
-  },
-
-  // ─── Full wash / ambient ──────────────────────────────────────
   {
     label: "Full Wash",
     bgColor: "#F2E8D0",
@@ -115,82 +50,97 @@ export const landscapeOrbs: OrbConfig[] = [
       { color: "#EB5020", x: 0.5, y: 0.8, radius: 0.3, driftX: 0.1, driftY: 0.06, freqX: 0.1, freqY: 0.1, phase: 4.5 },
     ],
   },
+
+  // ─── Variations of SUS Hero (bottom circle) ───────────────────
   {
-    label: "Soft Blanket",
+    label: "Hero Higher",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F0D4B0", x: 0.3, y: 0.3, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.07, phase: 0 },
-      { color: "#EBB488", x: 0.6, y: 0.6, radius: 0.5, driftX: 0.05, driftY: 0.06, freqX: 0.07, freqY: 0.06, phase: 2.0 },
-      { color: "#E89060", x: 0.5, y: 0.45, radius: 0.4, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.08, phase: 4.0 },
+      { color: "#EB5020", x: 0.5, y: 1.2, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "Hero Wider",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.65, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "Hero Rings",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#F04A18", x: 0.5, y: 1.4, radius: 0.4, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#E86830", x: 0.5, y: 1.35, radius: 0.5, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EBB488", x: 0.5, y: 1.25, radius: 0.6, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
 
-  // ─── Minimal / subtle ─────────────────────────────────────────
+  // ─── Variations of SUS Top (top circle) ───────────────────────
   {
-    label: "Hint",
+    label: "Top Lower",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EBB488", x: 0.5, y: 0.7, radius: 0.35, driftX: 0.05, driftY: 0.04, freqX: 0.08, freqY: 0.06, phase: 0 },
-      { color: "#F0D4B0", x: 0.4, y: 0.4, radius: 0.4, driftX: 0.04, driftY: 0.05, freqX: 0.06, freqY: 0.07, phase: 2.5 },
+      { color: "#EB5020", x: 0.5, y: -0.2, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
   {
-    label: "Blush",
+    label: "Top Wide",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F0D4B0", x: 0.5, y: 0.6, radius: 0.5, driftX: 0.06, driftY: 0.06, freqX: 0.07, freqY: 0.08, phase: 0 },
-      { color: "#E89060", x: 0.5, y: 0.8, radius: 0.25, driftX: 0.04, driftY: 0.03, freqX: 0.06, freqY: 0.05, phase: 2.0 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.7, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
-
-  // ─── Top-anchored ─────────────────────────────────────────────
   {
-    label: "Top Down",
+    label: "Top Left",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 0.5, y: -0.05, radius: 0.4, driftX: 0.05, driftY: 0.03, freqX: 0.07, freqY: 0.05, phase: 0 },
-      { color: "#E86830", x: 0.5, y: 0.15, radius: 0.4, driftX: 0.04, driftY: 0.04, freqX: 0.08, freqY: 0.06, phase: 1.5 },
-      { color: "#EBB488", x: 0.5, y: 0.35, radius: 0.4, driftX: 0.03, driftY: 0.04, freqX: 0.06, freqY: 0.07, phase: 3.0 },
+      { color: "#EB5020", x: 0.25, y: -0.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
     ],
   },
 
-  // ─── Corner anchors ───────────────────────────────────────────
+  // ─── Variations of Full Wash ──────────────────────────────────
   {
-    label: "Corner BL",
+    label: "Warm Wash",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 0.0, y: 1.0, radius: 0.4, driftX: 0.06, driftY: 0.04, freqX: 0.08, freqY: 0.06, phase: 0 },
-      { color: "#E86830", x: 0.15, y: 0.85, radius: 0.35, driftX: 0.05, driftY: 0.05, freqX: 0.07, freqY: 0.08, phase: 1.8 },
-      { color: "#EBB488", x: 0.3, y: 0.7, radius: 0.35, driftX: 0.04, driftY: 0.04, freqX: 0.06, freqY: 0.07, phase: 3.5 },
+      { color: "#E89060", x: 0.4, y: 0.5, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.07, freqY: 0.06, phase: 0 },
+      { color: "#EBB488", x: 0.6, y: 0.4, radius: 0.5, driftX: 0.05, driftY: 0.07, freqX: 0.06, freqY: 0.07, phase: 2.0 },
     ],
   },
   {
-    label: "Corner BR",
+    label: "Deep Wash",
+    bgColor: "#F2E8D0",
+    blobs: [
+      { color: "#EB5020", x: 0.3, y: 0.5, radius: 0.45, driftX: 0.06, driftY: 0.08, freqX: 0.08, freqY: 0.06, phase: 0 },
+      { color: "#E86830", x: 0.7, y: 0.5, radius: 0.45, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.08, phase: 2.5 },
+      { color: "#E89060", x: 0.5, y: 0.7, radius: 0.4, driftX: 0.08, driftY: 0.05, freqX: 0.09, freqY: 0.07, phase: 4.5 },
+    ],
+  },
+  {
+    label: "Subtle Wash",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 1.0, y: 1.0, radius: 0.4, driftX: 0.06, driftY: 0.04, freqX: 0.08, freqY: 0.06, phase: 0 },
-      { color: "#EB5020", x: 0.85, y: 0.85, radius: 0.35, driftX: 0.05, driftY: 0.05, freqX: 0.07, freqY: 0.08, phase: 1.8 },
-      { color: "#E89060", x: 0.7, y: 0.7, radius: 0.35, driftX: 0.04, driftY: 0.04, freqX: 0.06, freqY: 0.07, phase: 3.5 },
+      { color: "#EBB488", x: 0.4, y: 0.45, radius: 0.5, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.07, phase: 0 },
+      { color: "#F0D4B0", x: 0.6, y: 0.55, radius: 0.5, driftX: 0.05, driftY: 0.06, freqX: 0.05, freqY: 0.06, phase: 2.5 },
     ],
   },
 
-  // ─── Dual zones ───────────────────────────────────────────────
-  {
-    label: "Split",
-    bgColor: "#F4F1DE",
-    blobs: [
-      { color: "#F04A18", x: 0.15, y: 0.5, radius: 0.3, driftX: 0.06, driftY: 0.08, freqX: 0.08, freqY: 0.1, phase: 0 },
-      { color: "#EB5020", x: 0.85, y: 0.5, radius: 0.3, driftX: 0.06, driftY: 0.08, freqX: 0.08, freqY: 0.1, phase: 3.14 },
-      { color: "#EBB488", x: 0.5, y: 0.5, radius: 0.3, driftX: 0.03, driftY: 0.03, freqX: 0.05, freqY: 0.06, phase: 1.5 },
-    ],
-  },
+  // ─── Combos (top + bottom, hero + wash) ───────────────────────
   {
     label: "Top & Bottom",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 0.0, radius: 0.3, driftX: 0.05, driftY: 0.04, freqX: 0.07, freqY: 0.06, phase: 0 },
-      { color: "#F04A18", x: 0.5, y: 1.0, radius: 0.35, driftX: 0.05, driftY: 0.04, freqX: 0.07, freqY: 0.06, phase: 3.14 },
-      { color: "#E89060", x: 0.5, y: 0.5, radius: 0.35, driftX: 0.03, driftY: 0.03, freqX: 0.05, freqY: 0.05, phase: 1.5 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.45, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.45, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 3.14 },
+    ],
+  },
+  {
+    label: "Hero + Wash",
+    bgColor: "#F2E8D0",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EBB488", x: 0.5, y: 0.4, radius: 0.45, driftX: 0.05, driftY: 0.06, freqX: 0.06, freqY: 0.07, phase: 2.5 },
     ],
   },
 ];
@@ -288,8 +238,9 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
 
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
         grad.addColorStop(0, color);
-        grad.addColorStop(0.45, color);
-        grad.addColorStop(0.75, hexToRgba(color, 0.35));
+        grad.addColorStop(0.6, color);
+        grad.addColorStop(0.8, hexToRgba(color, 0.5));
+        grad.addColorStop(0.95, hexToRgba(color, 0.15));
         grad.addColorStop(1, "transparent");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, CW, CH);
