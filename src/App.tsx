@@ -269,8 +269,8 @@ function HalftoneScreen({ orbConfig, glassConfig, glassScale, active }: {
   );
 }
 
-function CircleScreen({ glassConfig, glassScale, active, bgColor, circleColor, circleRadius }: {
-  glassConfig: GlassConfig; glassScale: number; active: boolean; bgColor: string; circleColor: string; circleRadius: number;
+function CircleScreen({ glassConfig, glassScale, bgColor, circleColor, circleRadius }: {
+  glassConfig: GlassConfig; glassScale: number; bgColor: string; circleColor: string; circleRadius: number;
 }) {
   const image = useStaticCircleImage(bgColor, circleColor, circleRadius);
   return (
@@ -754,7 +754,6 @@ export default function App() {
           orbConfig={orb}
           glassConfig={glass}
           glassScale={glassScale}
-          active={true}
         />
       )}
       {mode === "circle" && (
@@ -762,7 +761,6 @@ export default function App() {
           key={`circle-${currentGlassIdx}`}
           glassConfig={glass}
           glassScale={glassScale}
-          active={true}
           bgColor={bgColor}
           circleColor={circleColor}
           circleRadius={circleRadius}
