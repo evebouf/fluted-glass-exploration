@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-const BrandKit = lazy(() => import('./brand/BrandKit.tsx'))
+const DragTest = lazy(() => import('./DragTest.tsx'))
 
 function useHash() {
   const [hash, setHash] = useState(window.location.hash)
@@ -17,10 +17,10 @@ function useHash() {
 
 function Root() {
   const hash = useHash()
-  if (hash === '#/brand') {
+  if (hash === '#/drag') {
     return (
-      <Suspense fallback={<div style={{ background: '#F4F2DD', width: '100vw', height: '100vh' }} />}>
-        <BrandKit />
+      <Suspense fallback={<div style={{ background: '#F4F1DE', width: '100vw', height: '100vh' }} />}>
+        <DragTest />
       </Suspense>
     )
   }

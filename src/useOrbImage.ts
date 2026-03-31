@@ -18,8 +18,9 @@ export interface OrbConfig {
   blobs: Blob[];
 }
 
-const CW = 480;
-const CH = 270;
+// Match viewport aspect ratio so fit="cover" doesn't crop asymmetrically
+const CW = typeof window !== "undefined" ? Math.round(window.innerWidth / 2) : 960;
+const CH = typeof window !== "undefined" ? Math.round(window.innerHeight / 2) : 540;
 const DIAG = Math.sqrt(CW * CW + CH * CH);
 
 // All gradients use colors sampled from the live SUS site:
@@ -31,7 +32,50 @@ export const landscapeOrbs: OrbConfig[] = [
     label: "SUS Hero",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.25, radius: 0.6, driftX: 0, driftY: 0, freqX: 0, freqY: 0, phase: 0 },
+    ],
+  },
+  // Slight variations of the hero — exploring positioning and size
+  {
+    label: "SUS Higher",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.15, radius: 0.6, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "SUS Lower",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.4, radius: 0.6, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "SUS Bigger",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.2, radius: 0.7, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "SUS Compact",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.45, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "SUS Left",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.3, y: 1.25, radius: 0.6, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
+    ],
+  },
+  {
+    label: "SUS Right",
+    bgColor: "#F4F1DE",
+    blobs: [
+      { color: "#EB5020", x: 0.7, y: 1.25, radius: 0.6, driftX: 0.04, driftY: 0.05, freqX: 0.05, freqY: 0.03, phase: 0 },
     ],
   },
   {
@@ -180,9 +224,36 @@ export function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+// Store drag state on window so it survives HMR
+declare global {
+  interface Window {
+    __dragState?: { active: boolean; x: number; y: number };
+  }
+}
+
+if (typeof window !== "undefined" && !window.__dragState) {
+  window.__dragState = { active: false, x: 0.5, y: 0.5 };
+  window.addEventListener("mousemove", (e) => {
+    window.__dragState!.x = e.clientX / window.innerWidth;
+    window.__dragState!.y = e.clientY / window.innerHeight;
+  });
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Shift") window.__dragState!.active = true;
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Shift") window.__dragState!.active = false;
+  });
+}
+
+function getDrag() {
+  return window.__dragState ?? { active: false, x: 0.5, y: 0.5 };
+}
+
 export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string {
   const [image, setImage] = useState("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const configRef = useRef(config);
+  configRef.current = config;
 
   useEffect(() => {
     if (!active) return;
@@ -206,6 +277,25 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
       }
       lastDraw = now;
       const t = (now - start) / 1000;
+      const config = configRef.current;
+
+      // Check drag state
+      const drag = getDrag();
+      // Write to document title so we can see if the loop is even running
+      if (Math.floor(t) % 3 === 0 && Math.floor(t) !== Math.floor(t - 0.05)) {
+        document.title = `loop t=${t.toFixed(0)} drag=${drag.active} x=${drag.x.toFixed(2)}`;
+      }
+      if (drag.active) {
+        ctx.fillStyle = "#00ff00";
+        ctx.fillRect(0, 0, CW, CH);
+        ctx.fillStyle = "#ff0000";
+        ctx.beginPath();
+        ctx.arc(drag.x * CW, drag.y * CH, 80, 0, Math.PI * 2);
+        ctx.fill();
+        setImage(canvas.toDataURL("image/jpeg", 0.8));
+        frame = requestAnimationFrame(draw);
+        return;
+      }
 
       ctx.fillStyle = config.bgColor;
       ctx.fillRect(0, 0, CW, CH);
@@ -220,17 +310,23 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
         const hueShift = Math.sin(t * (0.05 + i * 0.02) + p) * 8;
         const color = shiftHue(blob.color, hueShift);
 
+        const bx = drag.active ? drag.x : blob.x;
+        const by = drag.active ? drag.y : blob.y;
+
         let cx: number, cy: number;
-        if (i % 3 === 0) {
-          cx = (blob.x + Math.cos(t * blob.freqX + p) * blob.driftX) * CW;
-          cy = (blob.y + Math.sin(t * blob.freqX + p) * blob.driftY) * CH;
+        if (drag.active) {
+          cx = bx * CW;
+          cy = by * CH;
+        } else if (i % 3 === 0) {
+          cx = (bx + Math.cos(t * blob.freqX + p) * blob.driftX) * CW;
+          cy = (by + Math.sin(t * blob.freqX + p) * blob.driftY) * CH;
         } else if (i % 3 === 1) {
-          cx = (blob.x + Math.sin(t * blob.freqX * 2 + p) * blob.driftX) * CW;
-          cy = (blob.y + Math.sin(t * blob.freqY * 3 + p) * blob.driftY) * CH;
+          cx = (bx + Math.sin(t * blob.freqX * 2 + p) * blob.driftX) * CW;
+          cy = (by + Math.sin(t * blob.freqY * 3 + p) * blob.driftY) * CH;
         } else {
           const radialT = Math.sin(t * blob.freqX * 0.7 + p);
-          cx = (blob.x + (blob.x - 0.5) * radialT * blob.driftX * 2) * CW;
-          cy = (blob.y + (blob.y - 0.5) * radialT * blob.driftY * 2) * CH;
+          cx = (bx + (bx - 0.5) * radialT * blob.driftX * 2) * CW;
+          cy = (by + (by - 0.5) * radialT * blob.driftY * 2) * CH;
         }
 
         const breathe = 1 + Math.sin(t * (0.08 + i * 0.02) + p * 2) * 0.35;
@@ -238,9 +334,10 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
 
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
         grad.addColorStop(0, color);
-        grad.addColorStop(0.6, color);
-        grad.addColorStop(0.8, hexToRgba(color, 0.5));
-        grad.addColorStop(0.95, hexToRgba(color, 0.15));
+        grad.addColorStop(0.55, color);
+        grad.addColorStop(0.7, hexToRgba(color, 0.6));
+        grad.addColorStop(0.85, hexToRgba(color, 0.25));
+        grad.addColorStop(0.95, hexToRgba(color, 0.08));
         grad.addColorStop(1, "transparent");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, CW, CH);
@@ -252,7 +349,7 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
 
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, [config, active]);
+  }, [active, config]);
 
   return image;
 }

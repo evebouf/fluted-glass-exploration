@@ -22,6 +22,7 @@ interface GlassConfig {
 }
 
 const glassPresets: GlassConfig[] = [
+  { label: "SUS", shape: "lines", distortionShape: "flat", size: 0.82, distortion: 0.45, edges: 0.3, blur: 0, shadows: 0.2, highlights: 0.12, stretch: 0, angle: 0, grainOverlay: 0.06 },
   { label: "None", shape: "lines", distortionShape: "prism", size: 0.95, distortion: 0, edges: 0, blur: 0, shadows: 0, highlights: 0, stretch: 0, angle: 0, grainOverlay: 0 },
   { label: "Whisper", shape: "lines", distortionShape: "prism", size: 0.95, distortion: 0.1, edges: 0.08, blur: 0, shadows: 0.05, highlights: 0.03, stretch: 0, angle: 0, grainOverlay: 0.02 },
   { label: "Fine", shape: "lines", distortionShape: "prism", size: 0.92, distortion: 0.3, edges: 0.2, blur: 0, shadows: 0.15, highlights: 0.1, stretch: 0, angle: 0, grainOverlay: 0.03 },
@@ -136,13 +137,63 @@ function CursorScreen({ orbConfig, glassConfig, glassScale }: {
   );
 }
 
-function BlobsScreen({ orbConfig, glassConfig, glassScale, active }: {
-  orbConfig: OrbConfig; glassConfig: GlassConfig; glassScale: number; active: boolean;
+function BlobsScreen({ orbConfig, glassConfig, glassScale, active, debug = false }: {
+  orbConfig: OrbConfig; glassConfig: GlassConfig; glassScale: number; active: boolean; debug?: boolean;
 }) {
   const image = useAnimatedOrbImage(orbConfig, active);
+  const [shiftStatus, setShiftStatus] = useState("");
+
+  useEffect(() => {
+    const onDown = (e: KeyboardEvent) => {
+      setShiftStatus(`Key pressed: "${e.key}" (code: ${e.code}) at ${new Date().toLocaleTimeString()}`);
+      if (e.key === "Shift") {
+        setShiftStatus("SHIFT HELD — move mouse to drag circle");
+      }
+    };
+    const onUp = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        setShiftStatus("Shift released");
+        setTimeout(() => setShiftStatus(""), 2000);
+      }
+    };
+    window.addEventListener("keydown", onDown);
+    window.addEventListener("keyup", onUp);
+    return () => {
+      window.removeEventListener("keydown", onDown);
+      window.removeEventListener("keyup", onUp);
+    };
+  }, []);
+
   return (
     <div className="screen active">
       <StaticGlass image={image} glassConfig={glassConfig} glassScale={glassScale} />
+      {/* Key press indicator */}
+      <div style={{
+        position: "absolute", top: 60, left: "50%", transform: "translateX(-50%)",
+        zIndex: 100, padding: "8px 16px", borderRadius: 6,
+        background: shiftStatus.includes("SHIFT") ? "#EB5020" : "rgba(61,40,0,0.7)",
+        color: "#F4F1DE", fontFamily: "'Martian Mono', monospace", fontSize: 11,
+        pointerEvents: "none", opacity: shiftStatus ? 1 : 0, transition: "opacity 0.3s",
+      }}>
+        {shiftStatus}
+      </div>
+      {debug && (
+        <>
+          {/* Screen center — red */}
+          <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "rgba(255,0,0,0.3)", zIndex: 50, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: 1, background: "rgba(255,0,0,0.3)", zIndex: 50, pointerEvents: "none" }} />
+          {/* Circle center — blue, based on first blob's x/y mapped to viewport */}
+          {orbConfig.blobs[0] && (
+            <>
+              <div style={{ position: "absolute", left: `${orbConfig.blobs[0].x * 100}%`, top: 0, bottom: 0, width: 2, background: "blue", zIndex: 50, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", top: `${orbConfig.blobs[0].y * 100}%`, left: 0, right: 0, height: 2, background: "blue", zIndex: 50, pointerEvents: "none" }} />
+            </>
+          )}
+          {/* Labels */}
+          <div style={{ position: "absolute", top: 4, left: "50%", transform: "translateX(4px)", zIndex: 51, fontFamily: "'Martian Mono',monospace", fontSize: 9, color: "red", pointerEvents: "none" }}>screen center</div>
+          <div style={{ position: "absolute", top: 16, left: `${(orbConfig.blobs[0]?.x ?? 0.5) * 100}%`, transform: "translateX(4px)", zIndex: 51, fontFamily: "'Martian Mono',monospace", fontSize: 9, color: "blue", pointerEvents: "none" }}>circle center (x={orbConfig.blobs[0]?.x})</div>
+        </>
+      )}
     </div>
   );
 }
@@ -524,10 +575,11 @@ export default function App() {
   const [currentOrbIdx, setCurrentOrbIdx] = useState(init.orbIdx);
   const [currentGlassIdx, setCurrentGlassIdx] = useState(init.glassIdx);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
 
   const [glass, setGlass] = useState<GlassConfig>({ ...glassPresets[init.glassIdx] });
   const [orb, setOrb] = useState<OrbConfig>({ ...landscapeOrbs[init.orbIdx] });
-  const [glassScale, setGlassScale] = useState(1.8);
+  const [glassScale, setGlassScale] = useState(1.0);
 
   // Circle mode state
   const [bgColor, setBgColor] = useState("#F4F2DD");
@@ -601,6 +653,7 @@ export default function App() {
         if (mode === "shapes") prevShapes(); else if (mode === "ambient") prevAmbient(); else prev();
       }
       else if (e.key === "p" || e.key === "P") { setPanelOpen((v) => !v); }
+      else if (e.key === "d" || e.key === "D") { setDebugMode((v) => !v); }
       else if (e.key === "m" || e.key === "M") { setMode((m) => m === "blobs" ? "cursor" : m === "cursor" ? "shapes" : m === "shapes" ? "grain" : m === "grain" ? "ambient" : m === "ambient" ? "circle" : "blobs"); }
       else if (e.key === "ArrowUp") { e.preventDefault(); loadGlassPreset((currentGlassIdx + 1) % glassPresets.length); }
       else if (e.key === "ArrowDown") { e.preventDefault(); loadGlassPreset((currentGlassIdx - 1 + glassPresets.length) % glassPresets.length); }
@@ -692,6 +745,7 @@ export default function App() {
           glassConfig={glass}
           glassScale={glassScale}
           active={true}
+          debug={debugMode}
         />
       )}
       {mode === "cursor" && (
