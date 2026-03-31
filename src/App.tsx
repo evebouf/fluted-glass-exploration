@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { FlutedGlass, GrainGradient } from "@paper-design/shaders-react";
+import { FlutedGlass, GrainGradient, HalftoneCmyk } from "@paper-design/shaders-react";
 import { useAnimatedOrbImage, landscapeOrbs, type OrbConfig } from "./useOrbImage";
 import { useStaticCircleImage } from "./useStaticCircle";
 import { useMovingShapesImage, shapesPresets, type ShapesConfig } from "./useMovingShapes";
@@ -143,6 +143,77 @@ function BlobsScreen({ orbConfig, glassConfig, glassScale, active }: {
   return (
     <div className="screen active">
       <StaticGlass image={image} glassConfig={glassConfig} glassScale={glassScale} />
+    </div>
+  );
+}
+
+function HalftoneScreen({ orbConfig, glassConfig, glassScale, active }: {
+  orbConfig: OrbConfig; glassConfig: GlassConfig; glassScale: number; active: boolean;
+}) {
+  const image = useAnimatedOrbImage(orbConfig, active);
+  if (!image) return null;
+
+  // Render halftone to a hidden canvas, capture as image for FlutedGlass
+  // Since we can't nest two WebGL shaders, we layer them
+  return (
+    <div className="screen active">
+      {/* Halftone layer */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+        <HalftoneCmyk
+          width="100%"
+          height="100%"
+          image={image}
+          colorBack="#F4F1DE"
+          colorC="#EB5020"
+          colorM="#E86830"
+          colorY="#EBB488"
+          colorK="#3D2800"
+          size={0.15}
+          gridNoise={0.25}
+          type="ink"
+          softness={0.8}
+          contrast={0.8}
+          gainC={0.2}
+          gainM={0.05}
+          gainY={0.15}
+          gainK={0}
+          floodC={0}
+          floodM={0}
+          floodY={0}
+          floodK={0}
+          grainMixer={0.05}
+          grainOverlay={0}
+          grainSize={0.5}
+          fit="cover"
+        />
+      </div>
+      {/* Fluted glass overlay — semi-transparent so halftone shows through */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 1, opacity: 0.35 }}>
+        <FlutedGlass
+          width="100%"
+          height="100%"
+          image={image}
+          colorBack="#F4F1DE"
+          colorShadow="#5C2800"
+          colorHighlight="#F0C8A0"
+          shape={glassConfig.shape}
+          distortionShape={glassConfig.distortionShape}
+          size={glassConfig.size}
+          distortion={glassConfig.distortion}
+          edges={glassConfig.edges}
+          blur={glassConfig.blur}
+          shadows={glassConfig.shadows}
+          highlights={glassConfig.highlights}
+          stretch={glassConfig.stretch}
+          angle={glassConfig.angle}
+          grainOverlay={glassConfig.grainOverlay}
+          offsetX={0}
+          offsetY={0}
+          scale={glassScale}
+          fit="cover"
+          speed={0}
+        />
+      </div>
     </div>
   );
 }
@@ -414,7 +485,7 @@ function slugify(s: string) { return s.toLowerCase().replace(/\s+/g, "-"); }
 
 function readUrlState() {
   const p = new URLSearchParams(window.location.search);
-  const mode = (p.get("mode") ?? "blobs") as "blobs" | "cursor" | "circle" | "shapes" | "grain" | "ambient";
+  const mode = (p.get("mode") ?? "blobs") as "blobs" | "cursor" | "circle" | "shapes" | "grain" | "ambient" | "halftone";
   const glassSlug = p.get("glass") ?? "";
   const presetSlug = p.get("preset") ?? "";
 
@@ -423,7 +494,7 @@ function readUrlState() {
   let shapesIdx = 0;
   let ambientIdx = 0;
 
-  if (mode === "blobs" || mode === "cursor") {
+  if (mode === "blobs" || mode === "cursor" || mode === "halftone") {
     const found = landscapeOrbs.findIndex((o) => slugify(o.label) === presetSlug);
     if (found >= 0) orbIdx = found;
   } else if (mode === "shapes") {
@@ -449,7 +520,7 @@ function pushUrl(mode: string, glassLabel: string, presetLabel?: string) {
 export default function App() {
   const init = useRef(readUrlState()).current;
 
-  const [mode, setMode] = useState<"blobs" | "cursor" | "circle" | "shapes" | "grain" | "ambient">(init.mode);
+  const [mode, setMode] = useState<"blobs" | "cursor" | "circle" | "shapes" | "grain" | "ambient" | "halftone">(init.mode);
   const [currentOrbIdx, setCurrentOrbIdx] = useState(init.orbIdx);
   const [currentGlassIdx, setCurrentGlassIdx] = useState(init.glassIdx);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -473,7 +544,7 @@ export default function App() {
   // Sync URL on state changes
   useEffect(() => {
     let presetLabel: string | undefined;
-    if (mode === "blobs" || mode === "cursor") presetLabel = landscapeOrbs[currentOrbIdx]?.label;
+    if (mode === "blobs" || mode === "cursor" || mode === "halftone") presetLabel = landscapeOrbs[currentOrbIdx]?.label;
     else if (mode === "shapes") presetLabel = shapesPresets[currentShapesIdx]?.label;
     else if (mode === "ambient") presetLabel = ambientPresets[currentAmbientIdx]?.label;
     pushUrl(mode, glassPresets[currentGlassIdx]?.label ?? "sharp", presetLabel);
@@ -543,6 +614,58 @@ export default function App() {
     setOrb((prev) => { const blobs = [...prev.blobs]; blobs[index] = { ...blobs[index], [key]: value }; return { ...prev, blobs }; });
   };
 
+  // ─── Favorites ──────────────────────────────────────────────────
+  interface Favorite {
+    name: string;
+    mode: string;
+    glass: GlassConfig & { scale: number };
+    orb?: OrbConfig;
+  }
+
+  const [favorites, setFavorites] = useState<Favorite[]>(() => {
+    try {
+      const saved = localStorage.getItem("bk-favorites");
+      return saved ? JSON.parse(saved) : [
+        // Pre-saved: your favorite
+        {
+          name: "Top Wide Whisper",
+          mode: "blobs",
+          glass: { label: "Whisper", shape: "lines", distortionShape: "prism", size: 0.87, distortion: 0.93, edges: 0.38, blur: 0.39, shadows: 0, highlights: 0.41, stretch: 0, angle: 0, grainOverlay: 0.02, scale: 1.8 },
+          orb: { label: "Top Wide", bgColor: "#F4F1DE", blobs: [{ color: "#EB5020", x: 0.5, y: -0.35, radius: 0.7, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 }] },
+        },
+      ];
+    } catch { return []; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem("bk-favorites", JSON.stringify(favorites)); } catch {}
+  }, [favorites]);
+
+  const saveFavorite = useCallback(() => {
+    const name = prompt("Name this favorite:");
+    if (!name) return;
+    const fav: Favorite = {
+      name,
+      mode,
+      glass: { ...glass, scale: glassScale },
+      orb: mode === "blobs" || mode === "cursor" ? orb : undefined,
+    };
+    setFavorites((prev) => [...prev, fav]);
+  }, [mode, glass, glassScale, orb]);
+
+  const loadFavorite = useCallback((fav: Favorite) => {
+    const { scale, ...glassOnly } = fav.glass;
+    setMode(fav.mode as typeof mode);
+    setGlass(glassOnly);
+    setGlassScale(scale);
+    if (fav.orb) setOrb(fav.orb);
+  }, []);
+
+  const removeFavorite = useCallback((index: number) => {
+    setFavorites((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  // ─── Copy Settings ────────────────────────────────────────────
   const [copied, setCopied] = useState(false);
   const copySettings = useCallback(() => {
     const settings: Record<string, unknown> = {
@@ -615,6 +738,15 @@ export default function App() {
           active={true}
         />
       )}
+      {mode === "halftone" && (
+        <HalftoneScreen
+          key={`halftone-${currentOrbIdx}-${currentGlassIdx}`}
+          orbConfig={orb}
+          glassConfig={glass}
+          glassScale={glassScale}
+          active={true}
+        />
+      )}
 
       {/* ── Top Menu Bar ── */}
       <div className={`menu-bar ${panelOpen ? "hidden" : ""}`}>
@@ -625,6 +757,7 @@ export default function App() {
           <button className={`menu-mode-btn ${mode === "shapes" ? "active" : ""}`} onClick={() => setMode("shapes")}>Shapes</button>
           <button className={`menu-mode-btn ${mode === "grain" ? "active" : ""}`} onClick={() => setMode("grain")}>Grain</button>
           <button className={`menu-mode-btn ${mode === "ambient" ? "active" : ""}`} onClick={() => setMode("ambient")}>Ambient</button>
+          <button className={`menu-mode-btn ${mode === "halftone" ? "active" : ""}`} onClick={() => setMode("halftone")}>Halftone</button>
           <button className={`menu-mode-btn ${mode === "circle" ? "active" : ""}`} onClick={() => setMode("circle")}>Circle</button>
         </div>
 
@@ -647,7 +780,7 @@ export default function App() {
 
         {/* Exploration thumbnails */}
         <div className="menu-explorations">
-          {(mode === "blobs" || mode === "cursor") && landscapeOrbs.map((preset, i) => (
+          {(mode === "blobs" || mode === "cursor" || mode === "halftone") && landscapeOrbs.map((preset, i) => (
             <button key={preset.label} className={`menu-thumb ${i === currentOrbIdx ? "active" : ""}`} onClick={() => loadOrbPreset(i)}>
               <span className="menu-thumb-label">{preset.label}</span>
             </button>
@@ -679,9 +812,37 @@ export default function App() {
       <div className={`panel ${panelOpen ? "open" : ""}`}>
         <div className="panel-scroll">
           {/* Copy settings */}
-          <button className="copy-btn" onClick={copySettings}>
-            {copied ? "Copied!" : "Copy Settings"}
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="copy-btn" style={{ flex: 1 }} onClick={copySettings}>
+              {copied ? "Copied!" : "Copy"}
+            </button>
+            <button className="copy-btn" style={{ flex: 1 }} onClick={saveFavorite}>
+              Save Favorite
+            </button>
+          </div>
+
+          {/* Favorites */}
+          {favorites.length > 0 && (
+            <div className="panel-section">
+              <div className="panel-section-title">Favorites</div>
+              <div className="preset-row">
+                {favorites.map((fav, i) => (
+                  <div key={i} style={{ display: "flex", gap: 2 }}>
+                    <button className="preset-btn" onClick={() => loadFavorite(fav)}>
+                      {fav.name}
+                    </button>
+                    <button
+                      className="preset-btn"
+                      style={{ padding: "4px 6px", opacity: 0.4 }}
+                      onClick={() => removeFavorite(i)}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Mode switch */}
           <div className="panel-section">
@@ -692,6 +853,7 @@ export default function App() {
               <button className={`preset-btn ${mode === "shapes" ? "active" : ""}`} onClick={() => setMode("shapes")}>Shapes</button>
               <button className={`preset-btn ${mode === "grain" ? "active" : ""}`} onClick={() => setMode("grain")}>Grain</button>
               <button className={`preset-btn ${mode === "ambient" ? "active" : ""}`} onClick={() => setMode("ambient")}>Ambient</button>
+              <button className={`preset-btn ${mode === "halftone" ? "active" : ""}`} onClick={() => setMode("halftone")}>Halftone</button>
               <button className={`preset-btn ${mode === "circle" ? "active" : ""}`} onClick={() => setMode("circle")}>Circle</button>
             </div>
           </div>
@@ -707,7 +869,7 @@ export default function App() {
           </div>
 
           {/* Blob presets (blobs mode only) */}
-          {(mode === "blobs" || mode === "cursor") && (
+          {(mode === "blobs" || mode === "cursor" || mode === "halftone") && (
             <div className="panel-section">
               <div className="panel-section-title">Color Preset</div>
               <div className="preset-row">
@@ -803,7 +965,7 @@ export default function App() {
           )}
 
           {/* Blob controls (blobs mode only) */}
-          {(mode === "blobs" || mode === "cursor") && (
+          {(mode === "blobs" || mode === "cursor" || mode === "halftone") && (
             <>
               <div className="panel-section">
                 <div className="panel-section-title">Background</div>
@@ -837,14 +999,14 @@ export default function App() {
       {!panelOpen && (
         <div className="hud-bottom">
           <div className="hud-label">
-            {(mode === "blobs" || mode === "cursor") && <h2>{orb.label}</h2>}
+            {(mode === "blobs" || mode === "cursor" || mode === "halftone") && <h2>{orb.label}</h2>}
             {mode === "shapes" && <h2>{shapes.label}</h2>}
             {mode === "ambient" && <h2>{ambientPresets[currentAmbientIdx].label}</h2>}
             <span>
               {mode === "circle" ? "Circle" : mode === "shapes" ? "Shapes" : mode === "grain" ? "Grain" : mode === "cursor" ? "Cursor" : mode === "ambient" ? "Ambient" : "Blobs"} &middot; {glass.label} &middot; {glass.shape} / {glass.distortionShape}
             </span>
           </div>
-          {(mode === "blobs" || mode === "cursor") && (
+          {(mode === "blobs" || mode === "cursor" || mode === "halftone") && (
             <div className="hud-nav">
               <button className="nav-btn" onClick={prev}>&larr;</button>
               <span className="hud-counter">

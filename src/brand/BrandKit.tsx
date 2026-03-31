@@ -132,12 +132,12 @@ export default function BrandKit() {
 
       {/* ── Hero ── */}
       <section className="bk-hero">
-        <div className="bk-hero-glass">
-          <LiveGlass orbIndex={0} style={{ width: "100%", height: "100%" }} />
-        </div>
-        <div className="bk-hero-text">
-          <h1>Startup School<br />2026</h1>
+        <div className="bk-hero-header">
+          <h1>STARTUP SCHOOL 2026</h1>
           <span>Branding Guide</span>
+        </div>
+        <div className="bk-hero-card">
+          <LiveGlass orbIndex={0} style={{ width: "100%", height: "100%" }} />
         </div>
       </section>
 
@@ -163,6 +163,13 @@ export default function BrandKit() {
               The ribbed glass is the constant — structured, architectural,
               deliberate. Behind it, the orange gradient is alive, always moving.
               Warmth pushing through order. Ambition refracted through discipline.
+            </p>
+            <p>
+              The orange is sun — optimism made visible. Not a cautious,
+              corporate warmth but the real thing: direct, energetic, impossible
+              to ignore. It's the color of the moment right before something
+              catches fire. Paired with the beige, it reads as sunlight on
+              sandstone — ancient and modern at the same time.
             </p>
             <p>
               Fluted glass is fractal by nature. A single light source hits

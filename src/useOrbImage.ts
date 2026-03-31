@@ -31,14 +31,14 @@ export const landscapeOrbs: OrbConfig[] = [
     label: "SUS Hero",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
     label: "SUS Top",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
@@ -56,23 +56,23 @@ export const landscapeOrbs: OrbConfig[] = [
     label: "Hero Higher",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 1.2, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.2, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
     label: "Hero Wider",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.65, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.65, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
     label: "Hero Rings",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#F04A18", x: 0.5, y: 1.4, radius: 0.4, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
-      { color: "#E86830", x: 0.5, y: 1.35, radius: 0.5, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
-      { color: "#EBB488", x: 0.5, y: 1.25, radius: 0.6, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#F04A18", x: 0.5, y: 1.4, radius: 0.4, driftX: 0.04, driftY: 0.06, freqX: 0.05, freqY: 0.04, phase: 0 },
+      { color: "#E86830", x: 0.5, y: 1.35, radius: 0.5, driftX: 0.04, driftY: 0.06, freqX: 0.05, freqY: 0.04, phase: 1.5 },
+      { color: "#EBB488", x: 0.5, y: 1.25, radius: 0.6, driftX: 0.04, driftY: 0.06, freqX: 0.05, freqY: 0.04, phase: 3.0 },
     ],
   },
 
@@ -81,21 +81,21 @@ export const landscapeOrbs: OrbConfig[] = [
     label: "Top Lower",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: -0.2, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: -0.2, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
     label: "Top Wide",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.7, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.7, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
   {
     label: "Top Left",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.25, y: -0.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
+      { color: "#EB5020", x: 0.25, y: -0.35, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
     ],
   },
 
@@ -131,16 +131,16 @@ export const landscapeOrbs: OrbConfig[] = [
     label: "Top & Bottom",
     bgColor: "#F4F1DE",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.45, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
-      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.45, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 3.14 },
+      { color: "#EB5020", x: 0.5, y: -0.35, radius: 0.45, driftX: 0.06, driftY: 0.06, freqX: 0.06, freqY: 0.04, phase: 0 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.45, driftX: 0.06, driftY: 0.06, freqX: 0.06, freqY: 0.04, phase: 3.14 },
     ],
   },
   {
     label: "Hero + Wash",
     bgColor: "#F2E8D0",
     blobs: [
-      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.02, driftY: 0.02, freqX: 0.04, freqY: 0.03, phase: 0 },
-      { color: "#EBB488", x: 0.5, y: 0.4, radius: 0.45, driftX: 0.05, driftY: 0.06, freqX: 0.06, freqY: 0.07, phase: 2.5 },
+      { color: "#EB5020", x: 0.5, y: 1.35, radius: 0.55, driftX: 0.06, driftY: 0.08, freqX: 0.06, freqY: 0.04, phase: 0 },
+      { color: "#EBB488", x: 0.5, y: 0.4, radius: 0.45, driftX: 0.06, driftY: 0.06, freqX: 0.06, freqY: 0.05, phase: 2.5 },
     ],
   },
 ];
@@ -233,7 +233,7 @@ export function useAnimatedOrbImage(config: OrbConfig, active: boolean): string 
           cy = (blob.y + (blob.y - 0.5) * radialT * blob.driftY * 2) * CH;
         }
 
-        const breathe = 1 + Math.sin(t * (0.15 + i * 0.04) + p * 2) * 0.2;
+        const breathe = 1 + Math.sin(t * (0.08 + i * 0.02) + p * 2) * 0.35;
         const r = blob.radius * DIAG * breathe;
 
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
