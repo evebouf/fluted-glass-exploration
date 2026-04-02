@@ -11,6 +11,10 @@ export const PALETTE = {
     linen: "#F2E8D0",
     bone: "#F4F0E4",
   },
+  dark: {
+    cardBg: "#2E1F15",
+    text: "#473426",
+  },
   glass: {
     shadow: "#5C2800",
     highlight: "#F0C8A0",
