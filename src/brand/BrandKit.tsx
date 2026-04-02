@@ -146,22 +146,26 @@ export default function BrandKit() {
           <h2 className="bk-concept-headline">Bending the Future</h2>
           <div className="bk-concept-body">
             <p>
+              <strong>The Metaphor</strong><br />
               The future is visible but not yet clear. Fluted glass refracts
               what's behind it — you can see the shapes, the warmth, the energy,
               but the details shift as you move. You have to lean in, look from
               new angles, piece it together yourself.
             </p>
             <p>
+              <strong>The Founder Experience</strong><br />
               That's the startup experience. The signal is there. The opportunity
               is real. But nobody hands you a clean picture. You carve out your
               own view.
             </p>
             <p>
+              <strong>Structure + Energy</strong><br />
               The ribbed glass is the constant — structured, architectural,
               deliberate. Behind it, the orange gradient is alive, always moving.
               Warmth pushing through order. Ambition refracted through discipline.
             </p>
             <p>
+              <strong>Why Orange</strong><br />
               The orange is sun — optimism made visible. Not a cautious,
               corporate warmth but the real thing: direct, energetic, impossible
               to ignore. It's the color of the moment right before something
@@ -169,6 +173,7 @@ export default function BrandKit() {
               sandstone — ancient and modern at the same time.
             </p>
             <p>
+              <strong>One Idea, Thousands of Angles</strong><br />
               Fluted glass is fractal by nature. A single light source hits
               the surface and multiplies — one beam becomes dozens of parallel
               lines, each carrying the same signal at a slightly different angle.
@@ -177,6 +182,7 @@ export default function BrandKit() {
               pattern repeats but the perspective is always unique.
             </p>
             <p>
+              <strong>Material Heritage</strong><br />
               The material itself carries a quiet nod to mid-century architecture —
               fluted glass in office lobbies, department stores, old San Francisco
               buildings. It's familiar without being retro. The warmth of the
