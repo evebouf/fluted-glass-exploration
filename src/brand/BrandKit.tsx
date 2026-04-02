@@ -166,11 +166,14 @@ export default function BrandKit() {
             </p>
             <p>
               <strong>Why Orange</strong><br />
-              The orange is sun — optimism made visible. Not a cautious,
-              corporate warmth but the real thing: direct, energetic, impossible
-              to ignore. It's the color of the moment right before something
-              catches fire. Paired with the beige, it reads as sunlight on
-              sandstone — ancient and modern at the same time.
+              Orange is the sun. It's optimism made visible — the rising sun,
+              the beginning of something, the early days of an era. It carries
+              the weight of a first morning: everything ahead, nothing yet
+              decided. It's also fire — intensity, warmth, brightness. Not a
+              cautious, corporate warmth but the real thing: direct, energetic,
+              impossible to ignore. The color of the moment right before
+              something catches. Paired with the beige, it reads as sunlight
+              on sandstone — ancient and modern at the same time.
             </p>
             <p>
               <strong>One Idea, Thousands of Angles</strong><br />
