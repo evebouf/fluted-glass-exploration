@@ -146,17 +146,24 @@ export default function BrandKit() {
           <h2 className="bk-concept-headline">Bending the Future</h2>
           <div className="bk-concept-body">
             <p>
-              <strong>The Metaphor</strong><br />
-              The future is visible but not yet clear. Fluted glass refracts
-              what's behind it — you can see the shapes, the warmth, the energy,
-              but the details shift as you move. You have to lean in, look from
-              new angles, piece it together yourself.
+              <strong>A Window Into the Future</strong><br />
+              Fluted glass is a window — but not a clear one. You can see
+              through it: the shapes, the warmth, the energy. But the details
+              shift as you move. The future is there, just not defined yet.
+              That's what Startup School is. Six thousand technical builders
+              at Chase Center, looking through the same window at what's being
+              built right now — the excitement, the possibilities, the things
+              that don't fully exist yet. You have to lean in, move around,
+              piece together your own picture.
             </p>
             <p>
-              <strong>The Founder Experience</strong><br />
-              That's the startup experience. The signal is there. The opportunity
-              is real. But nobody hands you a clean picture. You carve out your
-              own view.
+              <strong>Find Your Angle</strong><br />
+              Nobody hands you a clean view. You carve out your own space, find
+              your own angle. The glass multiplies — one beam of light hits the
+              surface and refracts into dozens of parallel lines, each carrying
+              the same signal at a slightly different angle. That's the
+              experience: six thousand people looking at the same future, each
+              seeing something different. Each finding the version that's theirs.
             </p>
             <p>
               <strong>Structure + Energy</strong><br />
@@ -176,13 +183,10 @@ export default function BrandKit() {
               on sandstone — ancient and modern at the same time.
             </p>
             <p>
-              <strong>One Idea, Thousands of Angles</strong><br />
-              Fluted glass is fractal by nature. A single light source hits
-              the surface and multiplies — one beam becomes dozens of parallel
-              lines, each carrying the same signal at a slightly different angle.
-              That's the ethos of Startup School: one idea, refracted across
-              thousands of founders, each finding their own version of it. The
-              pattern repeats but the perspective is always unique.
+              <strong>Fractal by Nature</strong><br />
+              The pattern repeats but the perspective is always unique. That's
+              the ethos — one event, one signal, refracted across thousands of
+              builders. The glass doesn't blur the picture. It multiplies it.
             </p>
             <p>
               <strong>Material Heritage</strong><br />
