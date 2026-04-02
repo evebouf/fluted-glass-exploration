@@ -49,10 +49,12 @@ export default function GlassPanel({
   params,
   onChange,
   defaults,
+  extraControls,
 }: {
   params: GlassParams;
   onChange: (params: GlassParams) => void;
   defaults?: GlassParams;
+  extraControls?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const defs = defaults || GLASS_DEFAULTS;
@@ -124,6 +126,8 @@ export default function GlassPanel({
             <Slider label="V. Distortion" value={params.vDistort} min={0} max={0.05} step={0.001} onChange={(v) => update("vDistort", v)} />
             <Slider label="Time Speed" value={params.timeSpeed} min={0} max={5} onChange={(v) => update("timeSpeed", v)} />
           </div>
+
+          {extraControls}
 
           <button
             onClick={() => onChange({ ...defs })}

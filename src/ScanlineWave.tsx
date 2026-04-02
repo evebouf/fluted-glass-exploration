@@ -86,12 +86,9 @@ void main() {
   vec2 displaced = clamp(uv + vec2(hDisplace, vDisplace), 0.0, 1.0);
   vec4 color = texture(u_tex, displaced);
 
-  // Seams between ribs — warm orange tint, never black
+  // Seam disabled
   float seamMask = abs(rib);
   float seam = smoothstep(0.0, 0.3 / u_seamStrength, seamMask);
-  vec3 seamTint = vec3(0.7, 0.35, 0.12); // warm amber base
-  vec3 seamColor = mix(seamTint, color.rgb, 0.5);
-  color.rgb = mix(seamColor, color.rgb, seam);
 
   // Highlights on rib peaks
   float highlightVal = pow(max(rib, 0.0), 2.0) * u_highlight;
@@ -233,7 +230,7 @@ export default function ScanlineWave() {
     let lastNow = 0;
 
     function drawBlobs(t: number) {
-      bCtx.fillStyle = "#FEC59A";
+      bCtx.fillStyle = "rgb(255, 235, 210)";
       bCtx.fillRect(0, 0, bw, bh);
 
       const blobSpd = paramsRef.current.blobSpeed;

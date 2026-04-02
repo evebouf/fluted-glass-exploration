@@ -15,16 +15,16 @@ interface GlassParams {
 }
 
 const DEFAULTS: GlassParams = {
-  ribDensity: 0.05,
-  refraction: 5.0,
+  ribDensity: 2.0,
+  refraction: 4.1,
   waveAmp: 1.84,
-  waveSpeed: 2.65,
+  waveSpeed: 1.66,
   seamStrength: 3.42,
-  highlight: 0.05,
-  shadow: 0.09,
-  grain: 0.025,
-  vDistort: 0.008,
-  timeSpeed: 2.21,
+  highlight: 0.03,
+  shadow: 0.01,
+  grain: 0.1,
+  vDistort: 0.038,
+  timeSpeed: 0.35,
 };
 
 // ─── Palette ────────────────────────────────────────────────────

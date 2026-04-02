@@ -51,11 +51,9 @@ void main() {
   vec2 displaced = clamp(uv + vec2(hDisplace, vDisplace), 0.0, 1.0);
   vec4 color = texture(u_tex, displaced);
 
+  // Seam disabled
   float seamMask = abs(rib);
   float seam = smoothstep(0.0, 0.3 / u_seamStrength, seamMask);
-  vec3 seamTint = vec3(0.7, 0.35, 0.12);
-  vec3 seamColor = mix(seamTint, color.rgb, 0.5);
-  color.rgb = mix(seamColor, color.rgb, seam);
 
   float highlightVal = pow(max(rib, 0.0), 2.0) * u_highlight;
   color.rgb += highlightVal;
@@ -455,15 +453,34 @@ function drawTide(ctx: CanvasRenderingContext2D, w: number, h: number, t: number
   ctx.putImageData(imgData, 0, 0);
 }
 
+// ─── Orb config (shared via ref) ────────────────────────────────
+export interface OrbParams {
+  posX: number;    // 0–1, horizontal center
+  posY: number;    // 0–1, vertical center
+  size: number;    // 0–1, radius relative to canvas
+  drift: number;   // how much the orb drifts
+}
+
+export const ORB_DEFAULTS: OrbParams = {
+  posX: 0.57,
+  posY: 0.59,
+  size: 1.17,
+  drift: 0.23,
+};
+
+// Module-level ref so drawOrb can read it without changing the drawer signature
+let _orbParams: OrbParams = { ...ORB_DEFAULTS };
+export function setOrbParamsRef(p: OrbParams) { _orbParams = p; }
+
 // ─── Drawer map ─────────────────────────────────────────────────
 function drawOrb(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  // Single large circle bobbing up and down on a warm background
+  const o = _orbParams;
   ctx.fillStyle = rgba(C.cream, 1);
   ctx.fillRect(0, 0, w, h);
 
-  const cx = w / 2 + Math.sin(t * 0.25) * w * 0.03;
-  const cy = h * 0.7 + Math.sin(t * 0.2) * h * 0.06;
-  const r = Math.min(w, h) * 0.35 + Math.sin(t * 0.15) * Math.min(w, h) * 0.02;
+  const cx = w * o.posX + Math.sin(t * 0.25) * w * o.drift * 0.5;
+  const cy = h * o.posY + Math.sin(t * 0.2) * h * o.drift;
+  const r = Math.min(w, h) * o.size + Math.sin(t * 0.15) * Math.min(w, h) * 0.03;
 
   const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   grad.addColorStop(0, rgba(C.hot, 0.95));
@@ -525,6 +542,24 @@ function createShaderProgram(gl: WebGL2RenderingContext) {
   return prog;
 }
 
+// ─── Orb slider (inline, matches GlassPanel style) ──────────────
+function OrbSlider({ label, value, onChange, min = 0, max = 1, step = 0.01 }: {
+  label: string; value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number;
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 8 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, fontFamily: "'Martian Mono', monospace", color: "rgba(255,255,255,0.5)" }}>
+        <span>{label}</span>
+        <span>{value.toFixed(2)}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        style={{ width: "100%", accentColor: "#EB5020" }}
+      />
+    </div>
+  );
+}
+
 // ─── Component ──────────────────────────────────────────────────
 export default function ScanlineVariations({ variant }: { variant: Variant }) {
   const glCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -535,18 +570,25 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
       return {
         ...GLASS_DEFAULTS,
         ribDensity: 0.03,
-        refraction: 2.0,
-        waveAmp: 0.6,
-        waveSpeed: 1.0,
-        seamStrength: 1.5,
+        refraction: 10.0,
+        waveAmp: 5.0,
+        waveSpeed: 0.89,
+        seamStrength: 5.0,
         highlight: 0.03,
         shadow: 0.04,
+        grain: 0.094,
+        vDistort: 0.0,
+        timeSpeed: 3.93,
       };
     }
     return { ...GLASS_DEFAULTS };
   });
   const paramsRef = useRef(params);
   paramsRef.current = params;
+
+  const [orbParams, setOrbParams] = useState<OrbParams>({ ...ORB_DEFAULTS });
+  // Keep the module-level ref in sync
+  useEffect(() => { setOrbParamsRef(orbParams); }, [orbParams]);
 
   useEffect(() => {
     const glCanvas = glCanvasRef.current!;
@@ -645,7 +687,27 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
         ref={glCanvasRef}
         style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", display: "block" }}
       />
-      <GlassPanel params={params} onChange={setParams} />
+      <GlassPanel
+        params={params}
+        onChange={setParams}
+        extraControls={variant === "orb" ? (
+          <>
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 14, marginTop: 14 }}>
+              <div style={{
+                fontFamily: "'Martian Mono', monospace", fontSize: 10, fontWeight: 700,
+                letterSpacing: "0.1em", textTransform: "uppercase" as const,
+                color: "rgba(255,255,255,0.3)", marginBottom: 12,
+              }}>
+                Orb Position
+              </div>
+            </div>
+            <OrbSlider label="X Position" value={orbParams.posX} min={0} max={1} onChange={(v) => setOrbParams((p) => ({ ...p, posX: v }))} />
+            <OrbSlider label="Y Position" value={orbParams.posY} min={0} max={1} onChange={(v) => setOrbParams((p) => ({ ...p, posY: v }))} />
+            <OrbSlider label="Size" value={orbParams.size} min={0.1} max={1.5} onChange={(v) => setOrbParams((p) => ({ ...p, size: v }))} />
+            <OrbSlider label="Drift" value={orbParams.drift} min={0} max={0.3} step={0.005} onChange={(v) => setOrbParams((p) => ({ ...p, drift: v }))} />
+          </>
+        ) : undefined}
+      />
       <div
         style={{
           position: "fixed", bottom: 16, left: 16, zIndex: 10,
