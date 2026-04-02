@@ -120,7 +120,7 @@ export default function BrandKit() {
     <div className="brand-kit">
       {/* ── Nav ── */}
       <nav className="bk-nav">
-        {["concept", "screens", "color", "type", "glass", "grain", "motion", "social", "usage", "moodboard"].map((id) => (
+        {["concept", "screens", "color", "type", "glass", "grain", "motion", "moodboard"].map((id) => (
           <button key={id} onClick={() => document.getElementById(`bk-${id}`)?.scrollIntoView({ behavior: "smooth" })}>
             {id}
           </button>
@@ -205,12 +205,18 @@ export default function BrandKit() {
             </div>
             <div className="bk-concept-hook">
               <span className="bk-concept-hook-label">Venue</span>
-              <span className="bk-concept-hook-text">Chase Center, San Francisco</span>
+              <span className="bk-concept-hook-text">Chase Center</span>
             </div>
             <div className="bk-concept-hook">
               <span className="bk-concept-hook-label">Event</span>
               <a href="https://events.ycombinator.com/startup-school-2026" target="_blank" rel="noopener" className="bk-concept-hook-link">
                 Startup School 2026 &rarr;
+              </a>
+            </div>
+            <div className="bk-concept-hook">
+              <span className="bk-concept-hook-label">Moodboard</span>
+              <a href="https://pin.it/1L0Bf7uaJ" target="_blank" rel="noopener" className="bk-concept-hook-link">
+                Pinterest Board &rarr;
               </a>
             </div>
           </div>
@@ -437,90 +443,6 @@ export default function BrandKit() {
         </div>
       </section>
 
-      {/* ── Social ── */}
-      <section className="bk-section" id="bk-social">
-        <div className="bk-section-label">Social</div>
-
-        <div className="bk-concept-body" style={{ marginBottom: 48 }}>
-          <p>
-            Social media assets use the fluted glass gradient as a full-bleed
-            background with text set in Martian Mono. Keep copy short. Let the
-            texture do the work.
-          </p>
-        </div>
-
-        <div className="bk-social-grid">
-          <div className="bk-social-card bk-social-square">
-            <LiveGlass orbIndex={0} style={{ width: "100%", height: "100%" }} />
-            <div className="bk-social-overlay">
-              <span className="bk-social-eyebrow">Y Combinator presents</span>
-              <span className="bk-social-title">STARTUP<br />SCHOOL<br />2026</span>
-              <span className="bk-social-detail">Chase Center &middot; San Francisco</span>
-            </div>
-            <span className="bk-social-format">Instagram &middot; 1080 &times; 1080</span>
-          </div>
-
-          <div className="bk-social-card bk-social-story">
-            <LiveGlass orbIndex={0} style={{ width: "100%", height: "100%" }} />
-            <div className="bk-social-overlay">
-              <span className="bk-social-eyebrow">Startup School 2026</span>
-              <span className="bk-social-title" style={{ fontSize: 36 }}>WINDOW<br />INTO THE<br />FUTURE</span>
-              <span className="bk-social-detail">Apply now &rarr;</span>
-            </div>
-            <span className="bk-social-format">Story &middot; 1080 &times; 1920</span>
-          </div>
-
-          <div className="bk-social-card bk-social-landscape">
-            <LiveGlass orbIndex={0} style={{ width: "100%", height: "100%" }} />
-            <div className="bk-social-overlay bk-social-overlay-row">
-              <span className="bk-social-title" style={{ fontSize: 28 }}>STARTUP SCHOOL 2026</span>
-              <span className="bk-social-detail">Find your angle &middot; Chase Center, SF</span>
-            </div>
-            <span className="bk-social-format">Twitter / OG &middot; 1200 &times; 630</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Usage ── */}
-      <section className="bk-section" id="bk-usage">
-        <div className="bk-section-label">Usage</div>
-
-        <div className="bk-usage-cols">
-          <div className="bk-usage-col">
-            <div className="bk-usage-col-label" style={{ color: PALETTE.orange.blaze }}>Do</div>
-            {[
-              "Use vertical glass lines (angle: 0)",
-              "Use SUS Hero gradient for primary content",
-              "Keep grain overlay subtle (0.03 – 0.08)",
-              `Use ${PALETTE.orange.blaze} as the primary accent`,
-              "Use Martian Mono exclusively",
-              "Weight 200-300 for display, 500-700 for labels",
-            ].map((text, i) => (
-              <div key={i} className="bk-usage-item">
-                <span className="bk-rule-dot" style={{ backgroundColor: PALETTE.orange.blaze, marginTop: 6 }} />
-                {text}
-              </div>
-            ))}
-          </div>
-
-          <div className="bk-usage-col">
-            <div className="bk-usage-col-label" style={{ color: "rgba(61, 40, 0, 0.3)" }}>Avoid</div>
-            {[
-              "Black (#000) or white (#FFF) anywhere",
-              "Horizontal or diagonal glass lines",
-              "Stacking multiple shader layers",
-              "Busy backgrounds — keep blob count to 2-4",
-              "Any font other than Martian Mono",
-            ].map((text, i) => (
-              <div key={i} className="bk-usage-item">
-                <span className="bk-rule-dot" style={{ backgroundColor: "rgba(61, 40, 0, 0.15)", marginTop: 6 }} />
-                {text}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Moodboard ── */}
       <section className="bk-section" id="bk-moodboard">
         <div className="bk-section-label">Moodboard</div>
@@ -530,6 +452,44 @@ export default function BrandKit() {
             Visual references, inspiration, and texture samples.
           </p>
         </div>
+
+        <a
+          href="https://pin.it/1L0Bf7uaJ"
+          target="_blank"
+          rel="noopener"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "14px 24px",
+            borderRadius: 8,
+            background: "rgba(251, 79, 18, 0.08)",
+            border: "1px solid rgba(251, 79, 18, 0.15)",
+            textDecoration: "none",
+            marginBottom: 40,
+            transition: "background 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(251, 79, 18, 0.15)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(251, 79, 18, 0.08)")}
+        >
+          <span style={{
+            fontFamily: "'Martian Mono', monospace",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: PALETTE.orange.blaze,
+          }}>
+            Full Pinterest Board
+          </span>
+          <span style={{
+            fontFamily: "'Martian Mono', monospace",
+            fontSize: 13,
+            color: PALETTE.orange.blaze,
+          }}>
+            &rarr;
+          </span>
+        </a>
 
         <div className="bk-moodboard">
           <div className="bk-moodboard-grid">

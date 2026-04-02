@@ -80,6 +80,13 @@ function Root() {
       </Suspense>
     )
   }
+  if (hash === '#/scan-orb') {
+    return (
+      <Suspense fallback={<div style={{ background: '#FEC59A', width: '100vw', height: '100vh' }} />}>
+        <ScanlineVariations variant="orb" />
+      </Suspense>
+    )
+  }
   if (hash === '#/neon') {
     return (
       <Suspense fallback={<div style={{ background: '#1a0800', width: '100vw', height: '100vh' }} />}>

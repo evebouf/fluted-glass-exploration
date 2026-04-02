@@ -34,6 +34,7 @@ const NAV: NavGroup[] = [
       { label: "Scanline — Lava", hash: "#/scan-lava", description: "Metaball lava lamp blobs" },
       { label: "Scanline — Aurora", hash: "#/scan-aurora", description: "Flowing light curtains" },
       { label: "Scanline — Nebula", hash: "#/scan-nebula", description: "Layered cloud drifts" },
+      { label: "Scanline — Orb", hash: "#/scan-orb", description: "Floating circle bobbing up/down" },
     ],
   },
   {

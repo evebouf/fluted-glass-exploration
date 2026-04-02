@@ -1,9 +1,10 @@
 // ScanlineVariations: Same fluted glass shader, different animated backgrounds
 // Each variant changes what's behind the glass
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import GlassPanel, { GlassParams, GLASS_DEFAULTS } from "./GlassPanel";
 
-export type Variant = "waves" | "rings" | "diagonal" | "plasma" | "columns" | "lava" | "aurora" | "nebula" | "tide";
+export type Variant = "waves" | "rings" | "diagonal" | "plasma" | "columns" | "lava" | "aurora" | "nebula" | "tide" | "orb";
 
 // ─── Shaders (same glass as ScanlineWave) ───────────────────────
 const VERT = `#version 300 es
@@ -20,6 +21,15 @@ precision highp float;
 uniform sampler2D u_tex;
 uniform float u_time;
 uniform vec2 u_res;
+uniform float u_ribDensity;
+uniform float u_refraction;
+uniform float u_waveAmp;
+uniform float u_waveSpeed;
+uniform float u_seamStrength;
+uniform float u_highlight;
+uniform float u_shadow;
+uniform float u_grain;
+uniform float u_vDistort;
 
 in vec2 v_uv;
 out vec4 fragColor;
@@ -27,33 +37,33 @@ out vec4 fragColor;
 void main() {
   vec2 uv = v_uv;
 
-  float ribFreq = u_res.x * 0.05;
+  float ribFreq = u_res.x * u_ribDensity;
   float ribX = uv.x * ribFreq;
   float rib = sin(ribX + sin(u_time * 0.2) * 1.0);
 
-  float refract1 = cos(ribX + sin(u_time * 0.2) * 1.0) * 0.02 * 5.0;
-  float refract2 = cos(ribX * 0.7 + u_time * 0.12) * 0.015 * 5.0;
-  float bigWave = sin(uv.y * 4.0 + u_time * 2.65 * 0.6) * 0.04 * 1.84
-                + sin(uv.y * 2.0 - u_time * 2.65 * 0.3) * 0.03 * 1.84;
+  float refract1 = cos(ribX + sin(u_time * 0.2) * 1.0) * 0.02 * u_refraction;
+  float refract2 = cos(ribX * 0.7 + u_time * 0.12) * 0.015 * u_refraction;
+  float bigWave = sin(uv.y * 4.0 + u_time * u_waveSpeed * 0.6) * 0.04 * u_waveAmp
+                + sin(uv.y * 2.0 - u_time * u_waveSpeed * 0.3) * 0.03 * u_waveAmp;
   float hDisplace = refract1 + refract2 + bigWave;
-  float vDisplace = sin(uv.y * 8.0 + u_time * 0.5 + uv.x * 3.0) * 0.008;
+  float vDisplace = sin(uv.y * 8.0 + u_time * 0.5 + uv.x * 3.0) * u_vDistort;
 
   vec2 displaced = clamp(uv + vec2(hDisplace, vDisplace), 0.0, 1.0);
   vec4 color = texture(u_tex, displaced);
 
   float seamMask = abs(rib);
-  float seam = smoothstep(0.0, 0.3 / 3.42, seamMask);
+  float seam = smoothstep(0.0, 0.3 / u_seamStrength, seamMask);
   vec3 seamTint = vec3(0.7, 0.35, 0.12);
   vec3 seamColor = mix(seamTint, color.rgb, 0.5);
   color.rgb = mix(seamColor, color.rgb, seam);
 
-  float highlightVal = pow(max(rib, 0.0), 2.0) * 0.05;
+  float highlightVal = pow(max(rib, 0.0), 2.0) * u_highlight;
   color.rgb += highlightVal;
-  float shadowVal = pow(max(-rib, 0.0), 2.0) * 0.09;
+  float shadowVal = pow(max(-rib, 0.0), 2.0) * u_shadow;
   color.rgb -= shadowVal;
 
   float grainVal = fract(sin(dot(uv * u_res + u_time, vec2(12.9898, 78.233))) * 43758.5453);
-  color.rgb += (grainVal - 0.5) * 0.025;
+  color.rgb += (grainVal - 0.5) * u_grain;
 
   fragColor = vec4(color.rgb, 1.0);
 }`;
@@ -446,6 +456,25 @@ function drawTide(ctx: CanvasRenderingContext2D, w: number, h: number, t: number
 }
 
 // ─── Drawer map ─────────────────────────────────────────────────
+function drawOrb(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
+  // Single large circle bobbing up and down on a warm background
+  ctx.fillStyle = rgba(C.cream, 1);
+  ctx.fillRect(0, 0, w, h);
+
+  const cx = w / 2 + Math.sin(t * 0.25) * w * 0.03;
+  const cy = h * 0.7 + Math.sin(t * 0.2) * h * 0.06;
+  const r = Math.min(w, h) * 0.35 + Math.sin(t * 0.15) * Math.min(w, h) * 0.02;
+
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  grad.addColorStop(0, rgba(C.hot, 0.95));
+  grad.addColorStop(0.35, rgba(C.coral, 0.9));
+  grad.addColorStop(0.65, rgba(C.warm, 0.7));
+  grad.addColorStop(0.85, rgba(C.peach, 0.4));
+  grad.addColorStop(1, "transparent");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+}
+
 const DRAWERS: Record<Variant, (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void> = {
   waves: drawWaves,
   rings: drawRings,
@@ -456,6 +485,7 @@ const DRAWERS: Record<Variant, (ctx: CanvasRenderingContext2D, w: number, h: num
   aurora: drawAurora,
   nebula: drawNebula,
   tide: drawTide,
+  orb: drawOrb,
 };
 
 const LABELS: Record<Variant, string> = {
@@ -468,6 +498,7 @@ const LABELS: Record<Variant, string> = {
   aurora: "Aurora Curtains",
   nebula: "Nebula Clouds",
   tide: "Gentle Tide",
+  orb: "Floating Orb",
 };
 
 // ─── WebGL helpers ──────────────────────────────────────────────
@@ -499,14 +530,30 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
   const glCanvasRef = useRef<HTMLCanvasElement>(null);
   const variantRef = useRef(variant);
   variantRef.current = variant;
+  const [params, setParams] = useState<GlassParams>(() => {
+    if (variant === "orb") {
+      return {
+        ...GLASS_DEFAULTS,
+        ribDensity: 0.03,
+        refraction: 2.0,
+        waveAmp: 0.6,
+        waveSpeed: 1.0,
+        seamStrength: 1.5,
+        highlight: 0.03,
+        shadow: 0.04,
+      };
+    }
+    return { ...GLASS_DEFAULTS };
+  });
+  const paramsRef = useRef(params);
+  paramsRef.current = params;
 
   useEffect(() => {
     const glCanvas = glCanvasRef.current!;
     const gl = glCanvas.getContext("webgl2")!;
     if (!gl) { console.error("No WebGL2"); return; }
 
-    // Pixel-level variants use smaller canvas to keep 60fps
-    const pixelVariants = ["plasma", "lava", "aurora", "nebula", "tide"];
+    const pixelVariants = ["plasma", "lava", "aurora", "nebula", "tide", "orb"];
     const isPixel = pixelVariants.includes(variantRef.current);
     const bw = isPixel ? 256 : 512;
     const bh = isPixel ? 256 : 512;
@@ -520,6 +567,15 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
     const uTex = gl.getUniformLocation(prog, "u_tex");
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_res");
+    const uRibDensity = gl.getUniformLocation(prog, "u_ribDensity");
+    const uRefraction = gl.getUniformLocation(prog, "u_refraction");
+    const uWaveAmp = gl.getUniformLocation(prog, "u_waveAmp");
+    const uWaveSpeed = gl.getUniformLocation(prog, "u_waveSpeed");
+    const uSeamStrength = gl.getUniformLocation(prog, "u_seamStrength");
+    const uHighlight = gl.getUniformLocation(prog, "u_highlight");
+    const uShadow = gl.getUniformLocation(prog, "u_shadow");
+    const uGrain = gl.getUniformLocation(prog, "u_grain");
+    const uVDistort = gl.getUniformLocation(prog, "u_vDistort");
 
     const buf = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -546,7 +602,8 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
     let frame: number;
 
     function render(now: number) {
-      const t = now / 1000 * 2.21; // match timeSpeed default
+      const p = paramsRef.current;
+      const t = now / 1000 * p.timeSpeed;
 
       const drawer = DRAWERS[variantRef.current];
       drawer(bCtx, bw, bh, t);
@@ -558,6 +615,15 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
       gl.uniform1i(uTex, 0);
       gl.uniform1f(uTime, t);
       gl.uniform2f(uRes, glCanvas.width, glCanvas.height);
+      gl.uniform1f(uRibDensity, p.ribDensity);
+      gl.uniform1f(uRefraction, p.refraction);
+      gl.uniform1f(uWaveAmp, p.waveAmp);
+      gl.uniform1f(uWaveSpeed, p.waveSpeed);
+      gl.uniform1f(uSeamStrength, p.seamStrength);
+      gl.uniform1f(uHighlight, p.highlight);
+      gl.uniform1f(uShadow, p.shadow);
+      gl.uniform1f(uGrain, p.grain);
+      gl.uniform1f(uVDistort, p.vDistort);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.enableVertexAttribArray(aPos);
@@ -579,6 +645,7 @@ export default function ScanlineVariations({ variant }: { variant: Variant }) {
         ref={glCanvasRef}
         style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", display: "block" }}
       />
+      <GlassPanel params={params} onChange={setParams} />
       <div
         style={{
           position: "fixed", bottom: 16, left: 16, zIndex: 10,
