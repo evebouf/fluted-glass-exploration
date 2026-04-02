@@ -9,7 +9,6 @@ const BrandKit = lazy(() => import('./brand/BrandKit.tsx'))
 const GradientGlass = lazy(() => import('./GradientGlass.tsx'))
 const ScanlineWave = lazy(() => import('./ScanlineWave.tsx'))
 const StageGlass = lazy(() => import('./StageGlass.tsx'))
-const BandsGlass = lazy(() => import('./BandsGlass.tsx'))
 const ScanlineVariations = lazy(() => import('./ScanlineVariations.tsx'))
 const NeonScanline = lazy(() => import('./NeonScanline.tsx'))
 
