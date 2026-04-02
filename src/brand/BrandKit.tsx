@@ -325,6 +325,18 @@ export default function BrandKit() {
           ))}
         </div>
 
+        <div className="bk-color-group-label" style={{ marginTop: 48 }}>Secondary — Geist Mono</div>
+        <div className="bk-type-ramp">
+          {[100, 200, 300, 400, 500, 600, 700, 800].map((w) => (
+            <div key={w} className="bk-type-weight">
+              <span className="bk-type-weight-num">{w}</span>
+              <span className="bk-type-weight-sample" style={{ fontWeight: w, fontFamily: "'Geist Mono', monospace" }}>
+                Geist Mono {w}
+              </span>
+            </div>
+          ))}
+        </div>
+
         <div className="bk-type-scale">
           <div className="bk-type-scale-item">
             <span className="bk-type-scale-meta">48px / weight 200 — Hero display</span>
