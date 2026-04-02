@@ -2,7 +2,7 @@
 // Each variant changes what's behind the glass
 
 import { useEffect, useRef, useState } from "react";
-import GlassPanel, { GlassParams, GLASS_DEFAULTS } from "./GlassPanel";
+import GlassPanel, { type GlassParams, GLASS_DEFAULTS } from "./GlassPanel";
 
 export type Variant = "waves" | "rings" | "diagonal" | "plasma" | "columns" | "lava" | "aurora" | "nebula" | "tide" | "orb";
 
