@@ -44,12 +44,14 @@
 }
 
 .bk-hero-header h1 {
-  font-family: 'Martian Mono', monospace;
-  font-size: 48px;
-  font-weight: 200;
-  letter-spacing: 0.06em;
+  font-family: 'Martian Mono', 'Geist Mono', 'Space Mono', monospace;
+  font-size: 89px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 84px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #3D2800;
+  color: rgb(70, 51, 37);
   text-align: center;
 }
 
