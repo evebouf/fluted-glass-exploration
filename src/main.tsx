@@ -11,6 +11,7 @@ const ScanlineWave = lazy(() => import('./ScanlineWave.tsx'))
 const StageGlass = lazy(() => import('./StageGlass.tsx'))
 const BandsGlass = lazy(() => import('./BandsGlass.tsx'))
 const ScanlineVariations = lazy(() => import('./ScanlineVariations.tsx'))
+const NeonScanline = lazy(() => import('./NeonScanline.tsx'))
 
 function useHash() {
   const [hash, setHash] = useState(window.location.hash)
@@ -80,14 +81,28 @@ function Root() {
       </Suspense>
     )
   }
-  if (hash === '#/brand') {
+  if (hash === '#/neon') {
+    return (
+      <Suspense fallback={<div style={{ background: '#1a0800', width: '100vw', height: '100vh' }} />}>
+        <NeonScanline />
+      </Suspense>
+    )
+  }
+  if (hash === '#/blobs') {
+    return <App />
+  }
+  if (hash === '#/brand' || !hash || hash === '#/' || hash === '#') {
     return (
       <Suspense fallback={<div style={{ background: '#F4F1DE', width: '100vw', height: '100vh' }} />}>
         <BrandKit />
       </Suspense>
     )
   }
-  return <App />
+  return (
+    <Suspense fallback={<div style={{ background: '#F4F1DE', width: '100vw', height: '100vh' }} />}>
+      <BrandKit />
+    </Suspense>
+  )
 }
 
 createRoot(document.getElementById('root')!).render(

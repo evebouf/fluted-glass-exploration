@@ -15,13 +15,13 @@ const NAV: NavGroup[] = [
   {
     title: "Presentation",
     items: [
-      { label: "Brand Kit", hash: "#/brand", description: "Brand showcase & presets" },
+      { label: "Brand Kit", hash: "#/", description: "Brand showcase & presets" },
     ],
   },
   {
     title: "Glass + Blobs",
     items: [
-      { label: "Blobs", hash: "#/", description: "Animated orbs with fluted glass" },
+      { label: "Blobs", hash: "#/blobs", description: "Animated orbs with fluted glass" },
       { label: "Gradient Glass", hash: "#/gradient", description: "GrainGradient + glass overlay" },
       { label: "Stage Glass", hash: "#/stage", description: "Gradient animation with scroll" },
     ],
